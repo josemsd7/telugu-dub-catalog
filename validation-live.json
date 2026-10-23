@@ -1,0 +1,127 @@
+{
+  "version": "0.1.0",
+  "verifiedMovieCount": 75,
+  "checkedAt": "2026-10-23T10:12:48.743Z",
+  "stale": false,
+  "candidateCount": 564,
+  "exclusions": {
+    "missing_identity": 66,
+    "not_confirmed_indian": 232,
+    "missing_original_language": 73,
+    "canonical_title_mismatch": 5,
+    "original_telugu": 109,
+    "canonical_tmdb_mismatch": 1,
+    "title_mismatch": 1,
+    "ambiguous_identity": 1,
+    "canonical_year_mismatch": 1
+  },
+  "sourcePagesPerCatalog": 3,
+  "limits": [
+    "Telugu audio is reported by a release index, not independently measured from video files.",
+    "Ordering follows MediaFusion last_stream_added; this is not the exact first Telugu OTT release date.",
+    "Coverage is bounded to the configured number of source pages. Unknown or conflicting identities are excluded.",
+    "Wikidata supplies original language and country; Cinemeta independently checks country, title, TMDB ID and year.",
+    "Availability is not verified for a particular streaming subscription or country."
+  ],
+  "refreshWarnings": [],
+  "lastError": null,
+  "durationSeconds": 15.902,
+  "examples": [
+    {
+      "id": "tt25153418",
+      "name": "Purusha Pretham",
+      "year": "2023",
+      "originalLanguage": [
+        "Malayalam"
+      ]
+    },
+    {
+      "id": "tt13671922",
+      "name": "Madhuram",
+      "year": "2021",
+      "originalLanguage": [
+        "Malayalam"
+      ]
+    },
+    {
+      "id": "tt14002046",
+      "name": "Bheeshma Parvam",
+      "year": "2022",
+      "originalLanguage": [
+        "Malayalam"
+      ]
+    },
+    {
+      "id": "tt11732164",
+      "name": "Pathu Thala",
+      "year": "2023",
+      "originalLanguage": [
+        "Tamil"
+      ]
+    },
+    {
+      "id": "tt7892066",
+      "name": "Ayalaan",
+      "year": "2024",
+      "originalLanguage": [
+        "Tamil"
+      ]
+    },
+    {
+      "id": "tt14452368",
+      "name": "Writer",
+      "year": "2021",
+      "originalLanguage": [
+        "Tamil"
+      ]
+    },
+    {
+      "id": "tt9110340",
+      "name": "Andhaghaaram",
+      "year": "2020",
+      "originalLanguage": [
+        "Tamil"
+      ]
+    },
+    {
+      "id": "tt29461220",
+      "name": "Pani",
+      "year": "2024",
+      "originalLanguage": [
+        "Malayalam"
+      ]
+    },
+    {
+      "id": "tt5970844",
+      "name": "Thugs of Hindostan",
+      "year": "2018",
+      "originalLanguage": [
+        "Hindi"
+      ]
+    },
+    {
+      "id": "tt23475032",
+      "name": "Joe",
+      "year": "2023",
+      "originalLanguage": [
+        "Hindi"
+      ]
+    },
+    {
+      "id": "tt26008876",
+      "name": "Janaki Jaane",
+      "year": "2023",
+      "originalLanguage": [
+        "Malayalam"
+      ]
+    },
+    {
+      "id": "tt10230426",
+      "name": "Mrs. Serial Killer",
+      "year": "2020",
+      "originalLanguage": [
+        "Hindi"
+      ]
+    }
+  ]
+}
