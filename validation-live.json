@@ -1,15 +1,15 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "sourceName": "OTTReleaseMovies",
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
-  "verifiedMovieCount": 61,
-  "checkedAt": "2026-10-23T12:52:34.371Z",
+  "verifiedMovieCount": 63,
+  "checkedAt": "2026-10-23T13:50:43.757Z",
   "stale": false,
   "sourceRowCount": 248,
   "candidateCount": 152,
   "platformCounts": {
-    "Netflix": 16,
+    "Netflix": 18,
     "JioHotstar": 9,
     "Prime Video": 14,
     "Sun NXT": 6,
@@ -25,32 +25,53 @@
     "not_a_movie": 54,
     "telugu_audio_not_listed": 5,
     "tentative_or_subtitles_only": 2,
-    "original_telugu": 24,
+    "original_telugu": 37,
     "non_indian_language": 14,
     "no_matching_movie_id": 24,
     "ambiguous_movie_match": 2,
-    "original_language_unconfirmed": 16,
     "indian_origin_unconfirmed": 5,
     "non_indian_film": 34,
     "cast_mismatch": 6,
-    "title_mismatch": 1
+    "title_mismatch": 1,
+    "original_language_conflict": 1
   },
   "limits": [
     "OTT dates and Telugu audio are reported by OTTReleaseMovies, a third-party editorial source; actual audio tracks and regional subscriptions are not inspected.",
     "Only dated, non-tentative movie entries with Telugu audio listed are considered. Series, explicit Telugu originals, and non-Indian films are excluded.",
-    "Original language uses Wikidata where available, otherwise the publisher must explicitly identify a non-Telugu original language. Unknown or conflicting originals are excluded.",
+    "Original language uses Wikidata or the matching TMDB public movie page; an explicit publisher dubbing-direction label is the final fallback. Unknown or conflicting originals are excluded.",
     "Film identities use Cinemeta title, cast, country and year checks. Unmatched or ambiguous titles remain excluded and are reported in coverage data.",
     "Coverage follows the source page and is not a guarantee of every platform or every Telugu dub. Source layout changes or outages can interrupt updates; the last successful deployment is preserved."
   ],
-  "refreshWarnings": [
-    "tt0090954: Metadata HTTP 504",
-    "tt5080356: Metadata HTTP 504",
-    "tt11536878: Metadata HTTP 504",
-    "tt0757254: Metadata HTTP 504"
-  ],
+  "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 34.011,
+  "durationSeconds": 32.607,
   "examples": [
+    {
+      "id": "tt38915678",
+      "name": "Dorothy",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-23",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
+    {
+      "id": "tt38265603",
+      "name": "Pradhama Drishtiya Kuttakkar",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-09",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Malayalam"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
     {
       "id": "tt36596965",
       "name": "Mandaadi",
@@ -62,7 +83,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt37535100",
@@ -88,7 +109,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt28541577",
@@ -127,7 +148,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt36967234",
@@ -140,7 +161,7 @@
       "originalLanguage": [
         "Kannada"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt39667834",
@@ -153,7 +174,7 @@
       "originalLanguage": [
         "Hindi"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt42262473",
@@ -166,7 +187,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt39073377",
@@ -179,33 +200,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
-    },
-    {
-      "id": "tt35323618",
-      "name": "The India Story: Slow Poison in Progress",
-      "year": "2026",
-      "ottReleaseDate": "2026-09-18",
-      "platforms": [
-        "JioHotstar"
-      ],
-      "originalLanguage": [
-        "Hindi"
-      ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
-    },
-    {
-      "id": "tt37510017",
-      "name": "Thudakkam",
-      "year": "2026",
-      "ottReleaseDate": "2026-09-18",
-      "platforms": [
-        "JioHotstar"
-      ],
-      "originalLanguage": [
-        "Malayalam"
-      ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     }
   ]
 }

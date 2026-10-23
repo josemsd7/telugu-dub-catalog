@@ -25,7 +25,7 @@ GitHub Actions fetches the release page every six hours and publishes the genera
 1. Read factual fields from the publisher's main release table: title, listed OTT date, platform, language/dubbing label, cast and source link. Article prose and platform artwork are not republished.
 2. Exclude future or tentative dates, subtitle-only listings, series, reality shows and explicit Telugu originals.
 3. Match the film to Cinemeta using title or supplied aliases, cast, country and year. Require confirmed Indian origin. Ambiguous or inconsistent identities are excluded.
-4. Use Wikidata original-language metadata when available. Otherwise the publisher must explicitly identify a non-Telugu original language, such as `Tamil to Telugu`. Unknown or conflicting originals stay excluded. Any confirmed Telugu original language causes exclusion, including bilingual Telugu originals.
+4. Use Wikidata original-language metadata when available. For missing originals, read the **Original Language** field from the matching public TMDB movie page, checking its movie ID and title. This needs no account or API key. An explicit publisher label such as `Tamil to Telugu` is the final fallback. Unknown or conflicting originals stay excluded. Any confirmed Telugu original language causes exclusion, including bilingual Telugu originals.
 5. Order by the publisher's OTT date. A film's older cinema release date no longer moves it out of its new Telugu OTT release position. Source display names are preserved while IMDb IDs identify the matched films.
 6. Download working poster images and serve them from this add-on's own HTTPS host. Images must be under 100 kB. Alternate sources are attempted when a URL fails. A clearly marked PNG placeholder is used only when a particular film has no available image; such cases are reported in status. A total image-source outage stops deployment.
 
@@ -33,7 +33,7 @@ GitHub Actions fetches the release page every six hours and publishes the genera
 
 This is an editorial-source catalog, not a direct audit of every streaming platform. OTT dates and Telugu audio are **reported by OTTReleaseMovies**. The add-on does not inspect video audio tracks, require a subscription, or verify availability in the viewer's country. A platform release date is not necessarily the first-ever Telugu digital premiere.
 
-Only the source page's dated rows can be discovered. Missing or ambiguous identities and original languages can exclude valid dubs; `coverage.json` shows the excluded titles and reasons. A Telugu-only or generic multilingual label does not establish whether a film was originally Telugu. Such rows need independent original-language evidence. Titles not yet present in Cinemeta can also be omitted until a later update.
+Only the source page's dated rows can be discovered. Missing or ambiguous identities and original languages can exclude valid dubs; `coverage.json` shows the excluded titles and reasons. A Telugu-only or generic multilingual label does not establish whether a film was originally Telugu. Such rows need independent original-language evidence from Wikidata or the matching TMDB page. Titles not yet present in Cinemeta can also be omitted until a later update.
 
 The scraper expects the publisher's release-table headers. A future layout change may require a code update. This setup automates normal refreshes; it is not a promise of complete coverage or zero future maintenance.
 
@@ -64,13 +64,14 @@ GitHub Pages on the free plan requires a public repository. Publishing exposes t
 3. Enable Actions and allow the workflow to write repository contents.
 4. Run **Update and publish catalog** once. Later refreshes are scheduled automatically.
 
-The workflow stores updated factual metadata and caches in `data/catalog.json`. Successful movie searches and film identity checks are cached for seven days; unsuccessful searches and missing original-language identities are retried after six hours. Failed network requests are retried on a subsequent run. A parser failure, empty verified catalog, or total poster outage preserves the previous Pages deployment.
+The workflow stores updated factual metadata and caches in `data/catalog.json`. Successful movie searches, film identity checks and TMDB original-language facts are cached for seven days; unsuccessful searches and missing Wikidata original-language identities are retried after six hours. TMDB requests run at most two at a time, only for Indian film candidates missing that Wikidata field. Failed network requests are retried on a subsequent run. A parser failure, empty verified catalog, or total poster outage preserves the previous Pages deployment.
 
 ## Sources and code
 
 - Release discovery, Telugu dubbing labels, platform and OTT dates: https://ottreleasemovies.com/
 - Film IDs, cast, country and poster metadata: https://v3-cinemeta.strem.io/
 - Original-language and country metadata: https://www.wikidata.org/
+- Fallback original-language facts: public movie pages at https://www.themoviedb.org/ (community metadata; no API key)
 - Stremio catalog protocol: https://stremio.github.io/stremio-addon-sdk/api/requests/defineCatalogHandler.html
 
 The add-on code is MIT licensed. Third-party metadata and artwork retain their respective ownership and terms. Source links are provided for factual release listings. This project does not claim endorsement by the publisher or streaming platforms.

@@ -4,7 +4,7 @@ export {refreshFromOtt as refresh} from './source-refresh.mjs';
 const MAX_AGE=6*60*60*1000;
 
 export function manifest() {
-  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, ordered by OTTReleaseMovies OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Metadata: OTTReleaseMovies, Wikidata and Cinemeta.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Latest OTT',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
+  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, ordered by OTTReleaseMovies OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Metadata: OTTReleaseMovies, Wikidata, TMDB and Cinemeta.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Latest OTT',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
 }
 
 export function catalog(data,extra='') {
@@ -13,7 +13,7 @@ export function catalog(data,extra='') {
   const rawSkip=params.get('skip')||'0';if(!/^\d{1,6}$/.test(rawSkip))throw new Error('Invalid skip');
   const skip=Number(rawSkip),search=normalize((params.get('search')||'').slice(0,200)),genre=params.get('genre');
   const items=newestFirst(data.movies||[]).filter(x=>(!search||normalize(x.name).includes(search))&&(!genre||x.genres.includes(genre)));
-  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,originalLanguageEvidence,sourceCatalog,wikidata,sourceRank,identityCheckedAt,posterCandidates,ottReleaseDate,platforms,sourceTitle,sourceUrl,canonicalName,...meta})=>meta);
+  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,originalLanguageEvidence,originalLanguageSourceUrl,sourceCatalog,wikidata,sourceRank,identityCheckedAt,posterCandidates,ottReleaseDate,platforms,sourceTitle,sourceUrl,canonicalName,...meta})=>meta);
   return {metas,cacheMaxAge:600,staleRevalidate:3600};
 }
 

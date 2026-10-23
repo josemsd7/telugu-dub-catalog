@@ -1,32 +1,23 @@
 {
-  "version": "0.3.0",
-  "sourceName": "OTTReleaseMovies",
-  "sourceRows": 248,
-  "matchedMovies": 61,
-  "platforms": [
-    "Netflix",
-    "JioHotstar",
-    "Prime Video",
-    "Sun NXT",
-    "SonyLIV",
-    "ZEE5",
-    "Aha",
-    "Manorama Max",
-    "ETV Win",
-    "JioCinema",
-    "Saina Play"
-  ],
-  "sortOrder": "source_ott_release_date_desc",
+  "version": "0.3.1",
+  "movies": 63,
+  "platforms": 11,
+  "testsPassed": 17,
+  "sortOrderVerified": true,
+  "workingPosterFiles": 63,
+  "maxPosterBytes": 68036,
   "posters": {
-    "total": 61,
-    "actualPosters": 61,
+    "total": 63,
+    "actualPosters": 63,
     "fallbackPosters": 0,
     "fallbackIds": [],
-    "checkedAt": "2026-10-23T12:48:57.436Z"
+    "checkedAt": "2026-10-23T13:52:03.236Z"
   },
-  "validImages": 61,
-  "maximumPosterBytes": 70422,
-  "automatedTests": 14,
-  "includesPreviouslyMissingMandaadi": true,
-  "originalTeluguIncludedInMetadata": false
+  "sourceRefreshWarnings": [],
+  "newTitles": [
+    "Dorothy",
+    "Pradhama Drishtiya Kuttakkar",
+    "DC"
+  ],
+  "originalLanguageFallback": "Public TMDB movie facts, cached seven days; no API key"
 }

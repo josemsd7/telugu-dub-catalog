@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {join} from 'node:path';
 import {manifest,catalog,handle,refresh,newestFirst} from './src/core.mjs';
-import {parseSource,sourceReason,assessFilm,titleScore} from './src/source-refresh.mjs';
+import {parseSource,parseMovieFacts,sourceReason,assessFilm,titleScore} from './src/source-refresh.mjs';
 import {exportStatic} from './export.mjs';
 import {cachePosters} from './posters.mjs';
 
@@ -17,6 +17,7 @@ const identity={items:['Q134704471'],names:['mandaadi'],countries:['Q668'],langu
 const movie={id:meta.id,type:'movie',name:meta.name,releaseInfo:'2026',ottReleaseDate:'2026-10-08',genres:['Tamil'],originalLanguageIds:['Q5885'],poster:'https://images.metahub.space/poster/small/tt36596965/img',posterCandidates:['https://images.metahub.space/poster/small/tt36596965/img'],platforms:['Netflix']};
 const accepted={checkedAt:stamp,movies:[movie],sortOrder:'source_ott_release_date_desc',sourceName:'OTTReleaseMovies'};
 const html='<table><tr><th>Movie/ Series</th><th>OTT Release Date</th><th>OTT Platform</th><th>Genre</th><th>Direct/ Dubbing?</th><th>Lead Roles</th></tr><tr><td><a href="https://ottreleasemovies.com/mandaadi/">Mandaadi</a></td><td>08th Oct 2026</td><td><img src="/netflix-logo-new.png"></td><td>Action Drama</td><td>Tamil to Telugu</td><td>Soori, Suhas</td></tr></table>';
+const moviePage=(name='Mandaadi',language='Tamil',id='1465943')=>`<link rel="canonical" href="https://www.themoviedb.org/movie/${id}"><meta property="og:title" content="${name}"><p><strong><bdi>Original Language</bdi></strong> ${language}</p>`;
 
 test('public HTML parser extracts OTT dates, dubbing direction, platform and source link',()=>{
   const parsed=parseSource(html);assert.equal(parsed.sourceRowCount,1);
@@ -42,6 +43,25 @@ test('original Telugu and conflicting or unknown originals fail closed',()=>{
   assert.equal(assessFilm(row,match,{...identity,languages:['Q8097']}).reason,'original_telugu');
   assert.equal(assessFilm({...row,languageText:'Telugu, Tamil'},match,identity).reason,'original_language_unconfirmed');
   assert.equal(assessFilm(row,match,{...identity,languages:['Q1568']}).reason,'original_language_conflict');
+});
+test('public movie facts require one explicit language and the requested canonical movie ID',()=>{
+  const facts=parseMovieFacts(moviePage(),meta.tmdbId);
+  assert.deepEqual(facts.languageIds,['Q5885']);
+  assert.deepEqual(parseMovieFacts(moviePage().replace('/1465943"','/1465943-mandaadi"'),meta.tmdbId).languageIds,['Q5885']);
+  assert.throws(()=>parseMovieFacts(moviePage(),123),/ID mismatch/);
+  assert.throws(()=>parseMovieFacts(moviePage().replace('Original Language','Spoken Languages'),meta.tmdbId),/unambiguous/);
+  assert.throws(()=>parseMovieFacts(moviePage()+'<p>Original Language Telugu</p>',meta.tmdbId),/unambiguous/);
+  assert.throws(()=>parseMovieFacts(moviePage('Mandaadi','Tamil, Telugu'),meta.tmdbId),/Unrecognized/);
+});
+test('independent public facts admit generic multilingual dubs and reject Telugu originals or conflicts',()=>{
+  const generic={...row,languageText:'Telugu, Tamil'};
+  const facts=parseMovieFacts(moviePage(),meta.tmdbId);
+  assert.equal(assessFilm(generic,match,identity,facts).reason,null);
+  assert.match(assessFilm(generic,match,identity,facts).originalEvidence,/TMDB/);
+  assert.equal(assessFilm(generic,match,identity,{...facts,languageIds:['Q8097']}).reason,'original_telugu');
+  assert.equal(assessFilm(row,match,identity,{...facts,languageIds:['Q1568']}).reason,'original_language_conflict');
+  assert.equal(assessFilm(row,match,identity,{...facts,title:'Different Film'}).reason,'original_language_identity_conflict');
+  assert.equal(assessFilm(row,{...match,meta:{...meta,name:'Modha Rathiri'}},identity,{...facts,title:'Modha Rathri'}).reason,null);
 });
 test('foreign productions and mismatched cast cannot enter the catalog',()=>{
   assert.equal(assessFilm(row,{...match,meta:{...meta,countries:['united states']}},identity).reason,'non_indian_film');
@@ -86,11 +106,23 @@ test('the full refresh matches a source row, resolves the film and uses its OTT 
     if(value==='https://ottreleasemovies.com/')return new Response(html);
     if(value.includes('/catalog/'))return Response.json({metas:[{id:meta.id,type:'movie',name:meta.name,releaseInfo:'2026'}]});
     if(value.includes('/meta/'))return Response.json({meta:{id:meta.id,type:'movie',name:meta.name,country:'India',cast:['Soori'],moviedb_id:1465943,releaseInfo:'2026',released:'2026-09-10'}});
+    if(value.includes('themoviedb.org/movie/'))return new Response(moviePage());
     throw Error('Unexpected network request');
   };
   const result=await refresh({identities:{[meta.id]:identity}},{fetcher,now:Date.parse(stamp)});
   assert.equal(result.movies.length,1);assert.equal(result.movies[0].ottReleaseDate,'2026-10-08');
   assert.equal(result.sourceName,'OTTReleaseMovies');assert.equal(result.sortOrder,'source_ott_release_date_desc');
+});
+test('a generic multilingual row uses cached original facts without another page fetch',async()=>{
+  const previous={identities:{[meta.id]:identity},sourceOriginalLanguageCache:{[meta.tmdbId]:{...parseMovieFacts(moviePage(),meta.tmdbId),checkedAt:stamp}}};
+  const fetcher=async url=>{
+    if(String(url).includes('/catalog/'))return Response.json({metas:[{id:meta.id,name:meta.name}]});
+    if(String(url).includes('/meta/'))return Response.json({meta:{id:meta.id,name:meta.name,country:'India',cast:['Soori'],moviedb_id:1465943,releaseInfo:'2026'}});
+    throw Error('Unexpected page fetch');
+  };
+  const result=await refresh(previous,{source:{rows:[{...row,languageText:'Tamil, Telugu'}]},fetcher,now:Date.parse(stamp)});
+  assert.equal(result.movies.length,1);assert.match(result.movies[0].originalLanguageEvidence,/TMDB/);
+  assert.deepEqual(result.refreshWarnings,[]);
 });
 test('static export includes a factual coverage audit and only supported routes',async()=>{
   const directory=await mkdtemp(join(tmpdir(),'telugu-dub-test-'));
