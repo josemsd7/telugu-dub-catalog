@@ -4,7 +4,7 @@
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "verifiedMovieCount": 61,
-  "checkedAt": "2026-10-23T12:51:46.720Z",
+  "checkedAt": "2026-10-23T12:52:34.371Z",
   "stale": false,
   "sourceRowCount": 248,
   "candidateCount": 152,
@@ -43,11 +43,13 @@
     "Coverage follows the source page and is not a guarantee of every platform or every Telugu dub. Source layout changes or outages can interrupt updates; the last successful deployment is preserved."
   ],
   "refreshWarnings": [
-    "tt0186823: Metadata HTTP 504",
-    "tt2575890: Metadata HTTP 504"
+    "tt0090954: Metadata HTTP 504",
+    "tt5080356: Metadata HTTP 504",
+    "tt11536878: Metadata HTTP 504",
+    "tt0757254: Metadata HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 23.189,
+  "durationSeconds": 34.011,
   "examples": [
     {
       "id": "tt36596965",
