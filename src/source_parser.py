@@ -1,7 +1,7 @@
 """Extract factual release fields from the publisher's public release table."""
 from html.parser import HTMLParser
 from datetime import date
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin, parse_qs, unquote
 import json
 import re
 import sys
@@ -77,6 +77,76 @@ def platforms(cell):
         names=[v for k,v in NAMED_PLATFORMS.items() if k.replace('-',' ') in label]
     return list(dict.fromkeys(names)),list(dict.fromkeys(unknown))
 
+def platform_names(text):
+    names=[]
+    aliases=[('netflix','Netflix'),('prime','Prime Video'),('hotstar','JioHotstar'),
+             ('zee5','ZEE5'),('zee 5','ZEE5'),('aha','Aha'),('sony','SonyLIV'),
+             ('sun nxt','Sun NXT'),('sun-nxt','Sun NXT'),('sunnxt','Sun NXT'),
+             ('etv','ETV Win'),('manorama','Manorama Max'),('lionsgate','Lionsgate Play'),
+             ('jio cinema','JioCinema'),('jiocinema','JioCinema'),('saina','Saina Play'),
+             ('apple','Apple TV'),('youtube','YouTube')]
+    value=text.lower()
+    for token,name in aliases:
+        if token in value and name not in names:names.append(name)
+    return names
+
+def parse_trendraja(html):
+    url='https://trendraja.in/telugu-movie-ott-release-dates-2021/'
+    parser=Tables();parser.feed(html)
+    table=next((t for t in parser.tables if t and len(t[0])>=4
+                and 'digital release date' in t[0][1]['text'].lower()
+                and 'streaming partner' in t[0][2]['text'].lower()),None)
+    if not table:raise ValueError('Trendraja release table not found')
+    rows=[]
+    for cells in table[1:]:
+        if len(cells)<4:continue
+        title,raw_date,platform,category=[c['text'] for c in cells[:4]]
+        if not title:continue
+        rows.append({'title':title,'ottReleaseDate':parse_date(raw_date),'dateText':raw_date,
+                     'platforms':platform_names(platform),'genreText':category,'languageText':'Telugu',
+                     'audioEvidence':'Publisher Telugu OTT release table', 'castText':'',
+                     'sourceUrl':url,'sourceRank':len(rows),
+                     'tentative':bool(re.search(r'\b(soon|tba|expected|tentative|rumou?r)\b',raw_date,re.I))})
+    if not rows:raise ValueError('Trendraja release table empty')
+    return {'sourceUrl':url,'sourceRowCount':len(rows),'rows':rows}
+
+class SacnilkCards(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.rows=[];self.card=None;self.pages={1}
+    def handle_starttag(self,tag,attrs):
+        attrs=dict(attrs)
+        if tag=='a':
+            href=attrs.get('href','')
+            query=parse_qs(urlparse(href).query)
+            if query.get('page',[''])[0].isdigit():self.pages.add(int(query['page'][0]))
+            if href.startswith('/movie/') and 'data-languages' in attrs and 'data-platforms' in attrs:
+                self.card={'href':href,'languages':attrs['data-languages'],'platforms':attrs['data-platforms'],
+                           'parts':[],'title':''}
+        if self.card is not None:
+            if tag=='h3' and attrs.get('title'):self.card['title']=attrs['title']
+            if tag=='img' and not self.card['title']:self.card['title']=attrs.get('alt','')
+    def handle_data(self,text):
+        if self.card is not None:self.card['parts'].append(text)
+    def handle_endtag(self,tag):
+        if tag=='a' and self.card is not None:
+            c=self.card;self.card=None
+            if not c['title']:return
+            text=' '.join(' '.join(c['parts']).split())
+            year=re.search(r'_(20\d{2})$',unquote(urlparse(c['href']).path))
+            self.rows.append({'title':c['title'],'ottReleaseDate':parse_date(text),'dateText':text[:100],
+                              'platforms':platform_names(c['platforms']),'genreText':'Movie',
+                              'languageText':c['languages'],'audioEvidence':'Publisher OTT availability-language field',
+                              'castText':'','movieYearHint':year[1] if year else None,
+                              'sourceUrl':urljoin('https://www.sacnilk.com/',c['href']),
+                              'sourceRank':len(self.rows),'tentative':'coming soon' in text.lower()})
+
+def parse_sacnilk(html):
+    parser=SacnilkCards();parser.feed(html)
+    if not parser.rows:raise ValueError('Sacnilk OTT movie cards not found')
+    return {'sourceUrl':'https://www.sacnilk.com/ott-movie-releases',
+            'sourceRowCount':len(parser.rows),'totalPages':max(parser.pages),'rows':parser.rows}
+
 def parse_source(html):
     parser=Tables(); parser.feed(html)
     table=next((t for t in parser.tables if t and any('dubbing' in c['text'].lower() for c in t[0]) and any('ott release date' in c['text'].lower() for c in t[0])),None)
@@ -94,6 +164,9 @@ def parse_source(html):
     return {'sourceUrl':SOURCE_URL,'sourceRowCount':len(rows),'rows':rows}
 
 if __name__=='__main__':
-    try: print(json.dumps(parse_source(sys.stdin.read()),ensure_ascii=False))
+    try:
+        kind=sys.argv[1] if len(sys.argv)>1 else 'ottreleasemovies'
+        parser={'ottreleasemovies':parse_source,'trendraja':parse_trendraja,'sacnilk':parse_sacnilk}[kind]
+        print(json.dumps(parser(sys.stdin.read()),ensure_ascii=False))
     except Exception as error:
         print(str(error),file=sys.stderr); sys.exit(1)

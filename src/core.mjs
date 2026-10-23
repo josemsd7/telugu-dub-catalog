@@ -4,7 +4,7 @@ export {refreshFromOtt as refresh} from './source-refresh.mjs';
 const MAX_AGE=6*60*60*1000;
 
 export function manifest() {
-  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, ordered by OTTReleaseMovies OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Metadata: OTTReleaseMovies, Wikidata, TMDB and Cinemeta.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Latest OTT',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
+  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, combining OTTReleaseMovies, Trendraja and Sacnilk, ordered by earliest reported Telugu OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Wikidata, TMDB and Cinemeta verify film identities and original languages.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Latest OTT',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
 }
 
 export function catalog(data,extra='') {
@@ -13,13 +13,13 @@ export function catalog(data,extra='') {
   const rawSkip=params.get('skip')||'0';if(!/^\d{1,6}$/.test(rawSkip))throw new Error('Invalid skip');
   const skip=Number(rawSkip),search=normalize((params.get('search')||'').slice(0,200)),genre=params.get('genre');
   const items=newestFirst(data.movies||[]).filter(x=>(!search||normalize(x.name).includes(search))&&(!genre||x.genres.includes(genre)));
-  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,originalLanguageEvidence,originalLanguageSourceUrl,sourceCatalog,wikidata,sourceRank,identityCheckedAt,posterCandidates,ottReleaseDate,platforms,sourceTitle,sourceUrl,canonicalName,...meta})=>meta);
+  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,originalLanguageEvidence,originalLanguageSourceUrl,sourceCatalog,wikidata,sourceRank,identityCheckedAt,posterCandidates,ottReleaseDate,platforms,sourceTitle,sourceUrl,canonicalName,sourceNames,releaseListings,releaseDateConflicts,countryEvidence,countrySourceUrl,...meta})=>meta);
   return {metas,cacheMaxAge:600,staleRevalidate:3600};
 }
 
 export function status(data) {
   const platformCounts={};for(const movie of data.movies||[])for(const name of movie.platforms||[])platformCounts[name]=(platformCounts[name]||0)+1;
-  return {version:VERSION,sourceName:data.sourceName||null,sourceUrl:data.sourceUrl||null,sortOrder:data.sortOrder||null,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,sourceRowCount:data.sourceRowCount||0,candidateCount:data.candidateCount||0,platformCounts,exclusions:data.counts||{},limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};
+  return {version:VERSION,sourceName:data.sourceName||null,sourceUrl:data.sourceUrl||null,sortOrder:data.sortOrder||null,datePolicy:data.datePolicy||null,coverageWindowStart:data.coverageWindowStart||null,coverageHistoryDays:data.coverageHistoryDays||null,sourceUrls:data.sourceUrls||[],sources:data.sourceStatus||[],acceptedListingCount:data.acceptedListingCount||0,duplicatesMerged:data.duplicatesMerged||0,releaseDateConflictCount:data.releaseDateConflictCount||0,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,sourceRowCount:data.sourceRowCount||0,candidateCount:data.candidateCount||0,platformCounts,exclusions:data.counts||{},limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};
 }
 
 export async function handle(request,env,store,context={}) {

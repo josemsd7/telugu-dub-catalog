@@ -1,23 +1,73 @@
 {
-  "version": "0.3.1",
-  "movies": 63,
-  "platforms": 11,
-  "testsPassed": 17,
+  "version": "0.4.0",
+  "checkedAt": "2026-10-23T15:11:37.642Z",
+  "validationMode": "Local build from fetched publisher snapshots and refreshed identity metadata",
+  "movies": 123,
+  "platforms": 12,
+  "testsPassed": 26,
   "sortOrderVerified": true,
-  "workingPosterFiles": 63,
+  "datePolicy": "earliest_reported_telugu_ott_date",
+  "duplicatesMerged": 46,
+  "releaseDateConflicts": 3,
+  "workingPosterFiles": 123,
   "maxPosterBytes": 68036,
   "posters": {
-    "total": 63,
-    "actualPosters": 63,
+    "total": 123,
+    "actualPosters": 123,
     "fallbackPosters": 0,
     "fallbackIds": [],
-    "checkedAt": "2026-10-23T13:52:03.236Z"
+    "checkedAt": "2026-10-23T15:11:37.642Z"
   },
-  "sourceRefreshWarnings": [],
-  "newTitles": [
-    "Dorothy",
-    "Pradhama Drishtiya Kuttakkar",
-    "DC"
+  "sourceStates": [
+    {
+      "key": "ottreleasemovies",
+      "name": "OTTReleaseMovies",
+      "url": "https://ottreleasemovies.com/",
+      "state": "ok",
+      "checkedAt": "2026-10-23T14:59:45.464Z",
+      "rowCount": 247,
+      "rawRowCount": 248,
+      "pagesFetched": 1,
+      "pagesAvailable": 1,
+      "errors": [],
+      "movieCount": 63
+    },
+    {
+      "key": "trendraja",
+      "name": "Trendraja",
+      "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
+      "state": "cached",
+      "checkedAt": "2026-10-23T14:47:23.050Z",
+      "rowCount": 242,
+      "error": "HTTP 503",
+      "movieCount": 42
+    },
+    {
+      "key": "sacnilk",
+      "name": "Sacnilk",
+      "url": "https://www.sacnilk.com/ott-movie-releases",
+      "state": "ok",
+      "checkedAt": "2026-10-23T14:59:45.464Z",
+      "rowCount": 388,
+      "rawRowCount": 420,
+      "pagesFetched": 21,
+      "pagesAvailable": 25,
+      "errors": [],
+      "movieCount": 64
+    },
+    {
+      "key": "svteluguott",
+      "name": "SV Telugu OTT",
+      "url": "https://svteluguott.in/ott-movies",
+      "state": "disabled",
+      "rowCount": 0,
+      "error": "Automated access returned HTTP 403 during validation on 2026-10-23; no verified live adapter is enabled.",
+      "movieCount": 0
+    }
   ],
-  "originalLanguageFallback": "Public TMDB movie facts, cached seven days; no API key"
+  "paginationCounts": [
+    100,
+    23,
+    0
+  ]
 }
