@@ -4,7 +4,7 @@ export {refreshFromOtt as refresh} from './source-refresh.mjs';
 const MAX_AGE=6*60*60*1000;
 
 export function manifest() {
-  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, combining OTTReleaseMovies, Trendraja and Sacnilk, ordered by earliest reported Telugu OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Wikidata, TMDB and Cinemeta verify film identities and original languages.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Latest OTT',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
+  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films listed with Telugu audio, combining OTTReleaseMovies, Trendraja and Sacnilk, ordered by earliest reported Telugu OTT dates. Telugu originals, series, tentative releases and unverified identities excluded. Wikidata, TMDB and Cinemeta verify film identities and original languages.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Available in Telugu',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
 }
 
 export function catalog(data,extra='') {
