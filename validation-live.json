@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "sortOrder": "film_release_date_desc",
   "verifiedMovieCount": 74,
-  "checkedAt": "2026-10-23T11:35:16.484Z",
+  "checkedAt": "2026-10-23T11:39:35.529Z",
   "stale": false,
   "candidateCount": 565,
   "exclusions": {
@@ -25,13 +25,11 @@
     "Availability is not verified for a particular streaming subscription or country."
   ],
   "refreshWarnings": [
-    "tt8907882: Metadata source returned HTTP 504",
     "tt12132908: Metadata source returned HTTP 504",
-    "tt0126264: Metadata source returned HTTP 502",
     "tt11826240: Metadata source returned HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 74.497,
+  "durationSeconds": 9.156,
   "examples": [
     {
       "id": "tt37535100",
