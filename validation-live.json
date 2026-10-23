@@ -4,7 +4,7 @@
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "verifiedMovieCount": 61,
-  "checkedAt": "2026-10-23T12:44:26.061Z",
+  "checkedAt": "2026-10-23T12:51:46.720Z",
   "stale": false,
   "sourceRowCount": 248,
   "candidateCount": 152,
@@ -27,12 +27,11 @@
     "tentative_or_subtitles_only": 2,
     "original_telugu": 24,
     "non_indian_language": 14,
-    "no_matching_movie_id": 23,
+    "no_matching_movie_id": 24,
     "ambiguous_movie_match": 2,
-    "movie_lookup_failed": 3,
-    "original_language_unconfirmed": 15,
+    "original_language_unconfirmed": 16,
     "indian_origin_unconfirmed": 5,
-    "non_indian_film": 33,
+    "non_indian_film": 34,
     "cast_mismatch": 6,
     "title_mismatch": 1
   },
@@ -44,14 +43,11 @@
     "Coverage follows the source page and is not a guarantee of every platform or every Telugu dub. Source layout changes or outages can interrupt updates; the last successful deployment is preserved."
   ],
   "refreshWarnings": [
-    "Dark Secrets: Metadata HTTP 504",
-    "Surya S/O Krishnan (Re Release): Metadata HTTP 504",
-    "tt0161767: Metadata HTTP 504",
-    "Hamnet: Metadata HTTP 504",
-    "tt21908892: Metadata HTTP 504"
+    "tt0186823: Metadata HTTP 504",
+    "tt2575890: Metadata HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 53.057,
+  "durationSeconds": 23.189,
   "examples": [
     {
       "id": "tt36596965",
