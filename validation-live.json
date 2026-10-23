@@ -17,7 +17,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-10-23T14:59:45.464Z",
+      "checkedAt": "2026-10-23T15:16:13.524Z",
       "rowCount": 247,
       "rawRowCount": 248,
       "pagesFetched": 1,
@@ -29,10 +29,13 @@
       "key": "trendraja",
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
-      "state": "cached",
-      "checkedAt": "2026-10-23T14:47:23.050Z",
+      "state": "ok",
+      "checkedAt": "2026-10-23T15:16:13.524Z",
       "rowCount": 242,
-      "error": "HTTP 503",
+      "rawRowCount": 1140,
+      "pagesFetched": 1,
+      "pagesAvailable": 1,
+      "errors": [],
       "movieCount": 42
     },
     {
@@ -40,7 +43,7 @@
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-10-23T14:59:45.464Z",
+      "checkedAt": "2026-10-23T15:16:13.524Z",
       "rowCount": 388,
       "rawRowCount": 420,
       "pagesFetched": 21,
@@ -62,7 +65,7 @@
   "duplicatesMerged": 46,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 123,
-  "checkedAt": "2026-10-23T15:09:14.846Z",
+  "checkedAt": "2026-10-23T15:16:13.524Z",
   "stale": false,
   "sourceRowCount": 877,
   "candidateCount": 547,
@@ -84,21 +87,21 @@
     "not_a_movie": 71,
     "telugu_audio_not_listed": 217,
     "tentative_or_subtitles_only": 2,
-    "original_telugu": 185,
+    "original_telugu": 184,
     "non_indian_language": 15,
     "missing_ott_date": 3,
     "upcoming": 1,
     "no_matching_movie_id": 67,
     "movie_lookup_failed": 23,
-    "ambiguous_movie_match": 45,
+    "ambiguous_movie_match": 46,
     "non_indian_film": 52,
-    "indian_origin_unconfirmed": 9,
+    "country_conflict": 2,
     "original_language_unconfirmed": 5,
     "cast_mismatch": 4,
     "title_mismatch": 6,
+    "indian_origin_unconfirmed": 8,
     "original_language_conflict": 1,
-    "identity_conflict": 1,
-    "country_conflict": 1
+    "identity_conflict": 1
   },
   "limits": [
     "OTT dates and Telugu audio are reported by OTTReleaseMovies, Trendraja and Sacnilk; actual audio tracks and regional subscriptions are not inspected.",
@@ -113,21 +116,28 @@
     "Kaagitham Padavalu: Cached lookup failure: Metadata HTTP 504",
     "It's a Medical Miracle: Cached lookup failure: Metadata HTTP 504",
     "Cached lookup failure: tt0290567: Metadata HTTP 504",
+    "tt11536878: Metadata HTTP 504",
+    "tt30803893: Metadata HTTP 504",
+    "tt32887788: Metadata HTTP 504",
+    "tt23871726: Metadata HTTP 504",
     "Cached lookup failure: tt13459804: Metadata HTTP 504",
     "Cached lookup failure: tt41991743: Metadata HTTP 504",
     "Transfer Trimurthulu: Cached lookup failure: Metadata HTTP 502",
     "Madhuraapuri Sadana: Cached lookup failure: Metadata HTTP 504",
     "Gurthukosthunnayi: Cached lookup failure: Metadata HTTP 504",
     "Cached lookup failure: tt33674441: Metadata HTTP 504",
-    "Cached lookup failure: tt0382092: Metadata HTTP 504",
+    "tt1435606: Metadata HTTP 504",
     "Trikala: Cached lookup failure: Metadata HTTP 504",
-    "Cached lookup failure: tt0215150: Metadata HTTP 504",
+    "Cached lookup failure: tt0382092: Metadata HTTP 504",
+    "tt0176799: Metadata HTTP 504",
     "Cached lookup failure: tt36822352: Metadata HTTP 504",
+    "Cached lookup failure: tt0215150: Metadata HTTP 504",
     "Cached lookup failure: tt5281134: Metadata HTTP 504",
     "Cached lookup failure: tt0090909: Metadata HTTP 504",
     "Cached lookup failure: tt30259667: Metadata HTTP 504",
     "Hey Balwanth: Cached lookup failure: Metadata HTTP 504",
     "Hey Balwanth: Cached lookup failure: Metadata HTTP 504",
+    "tt15876726: Metadata HTTP 504",
     "Bhartha Mahasayulaku Wignyapthi: Cached lookup failure: Metadata HTTP 504",
     "Bookie: Cached lookup failure: Metadata HTTP 504",
     "Bhartha Mahasayulaku Wignyapthi: Cached lookup failure: Metadata HTTP 504",
@@ -140,71 +150,85 @@
     "Baby Girl: Cached lookup failure: Metadata HTTP 504",
     "Mana ShankaraVaraprasad Garu: Cached lookup failure: Metadata HTTP 504",
     "Cached lookup failure: tt34618000: Metadata HTTP 504",
+    "tt38429498: Metadata HTTP 504",
+    "tt5698320: Metadata HTTP 504",
     "Psych Siddhartha: Cached lookup failure: Metadata HTTP 504",
     "Psych Siddhartha: Cached lookup failure: Metadata HTTP 504",
-    "Cached lookup failure: tt1153700: Metadata HTTP 504",
     "Cached lookup failure: tt35852307: Metadata HTTP 504",
+    "Cached lookup failure: tt1153700: Metadata HTTP 504",
     "Vaa Vaathiyaar: Cached lookup failure: The operation was aborted due to timeout",
+    "tt27263807: Metadata HTTP 504",
+    "tt9289086: Metadata HTTP 504",
+    "tt29606526: Metadata HTTP 504",
+    "tt43511827: Metadata HTTP 504",
+    "tt37962245: Metadata HTTP 504",
+    "tt27987150: Metadata HTTP 504",
     "K-Ramp: Cached lookup failure: Metadata HTTP 504",
     "K-Ramp: Cached lookup failure: Metadata HTTP 504",
-    "Cached lookup failure: tt0021635: Metadata HTTP 504",
-    "Cached lookup failure: tt36414924: Metadata HTTP 504"
+    "tt0991349: Metadata HTTP 504",
+    "Cached lookup failure: tt36414924: Metadata HTTP 504",
+    "tt35144943: Metadata HTTP 504",
+    "Cached lookup failure: tt0021635: Metadata HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 24.579,
-  "sourceFetchMode": "Previously fetched source snapshots; metadata enrichment only",
+  "durationSeconds": 116.317,
   "examples": [
     {
       "id": "tt38915678",
       "name": "Dorothy",
+      "year": "2026",
       "ottReleaseDate": "2026-10-23",
       "platforms": [
         "Netflix"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt37894980",
       "name": "Aasha",
+      "year": "2026",
       "ottReleaseDate": "2026-10-16",
       "platforms": [
         "ZEE5"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt38916037",
       "name": "Lenin Pandiyan",
+      "year": "2026",
       "ottReleaseDate": "2026-10-16",
       "platforms": [
         "Prime Video"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt33095205",
       "name": "Enna Vilai",
+      "year": "2026",
       "ottReleaseDate": "2026-10-15",
       "platforms": [
         "Netflix"
       ],
-      "countryEvidence": "TMDB public countryOfOrigin field",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt22797990",
       "name": "Khalifa",
+      "year": "2026",
       "ottReleaseDate": "2026-10-08",
       "platforms": [
         "Prime Video",
@@ -212,94 +236,101 @@
         "Manorama Max",
         "Lionsgate Play"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
       "id": "tt36596965",
       "name": "Mandaadi",
+      "year": "2026",
       "ottReleaseDate": "2026-10-08",
       "platforms": [
         "Netflix"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt38265603",
       "name": "Pradhama Drishtiya Kuttakkar",
+      "year": "2026",
       "ottReleaseDate": "2026-10-08",
       "platforms": [
         "Netflix"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt37535100",
       "name": "Bethlehem Kudumba Unit",
+      "year": "2026",
       "ottReleaseDate": "2026-10-02",
       "platforms": [
         "JioHotstar"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
       "id": "tt36931126",
       "name": "Immortal",
+      "year": "2026",
       "ottReleaseDate": "2026-10-02",
       "platforms": [
         "Prime Video"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt28541577",
       "name": "Sardar 2",
+      "year": "2026",
       "ottReleaseDate": "2026-10-01",
       "platforms": [
         "Prime Video"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
       "id": "tt37174734",
       "name": "Angikaaram",
+      "year": "2026",
       "ottReleaseDate": "2026-09-25",
       "platforms": [
         "Sun NXT"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
       "id": "tt41101621",
       "name": "Habeebi",
+      "year": "2026",
       "ottReleaseDate": "2026-09-25",
       "platforms": [
         "SonyLIV"
       ],
-      "countryEvidence": "Cinemeta country metadata",
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
     }
   ]
 }
