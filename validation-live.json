@@ -1,131 +1,213 @@
 {
-  "version": "0.2.0",
-  "sortOrder": "film_release_date_desc",
-  "verifiedMovieCount": 74,
-  "checkedAt": "2026-10-23T11:39:35.529Z",
+  "version": "0.3.0",
+  "sourceName": "OTTReleaseMovies",
+  "sourceUrl": "https://ottreleasemovies.com/",
+  "sortOrder": "source_ott_release_date_desc",
+  "verifiedMovieCount": 61,
+  "checkedAt": "2026-10-23T12:44:26.061Z",
   "stale": false,
-  "candidateCount": 565,
-  "exclusions": {
-    "not_confirmed_indian": 232,
-    "missing_identity": 68,
-    "missing_original_language": 73,
-    "canonical_title_mismatch": 5,
-    "original_telugu": 109,
-    "canonical_tmdb_mismatch": 1,
-    "title_mismatch": 1,
-    "ambiguous_identity": 1,
-    "canonical_year_mismatch": 1
+  "sourceRowCount": 248,
+  "candidateCount": 152,
+  "platformCounts": {
+    "Netflix": 16,
+    "JioHotstar": 9,
+    "Prime Video": 14,
+    "Sun NXT": 6,
+    "SonyLIV": 5,
+    "ZEE5": 4,
+    "Aha": 4,
+    "Manorama Max": 2,
+    "ETV Win": 1,
+    "JioCinema": 1,
+    "Saina Play": 1
   },
-  "sourcePagesPerCatalog": 3,
+  "exclusions": {
+    "not_a_movie": 54,
+    "telugu_audio_not_listed": 5,
+    "tentative_or_subtitles_only": 2,
+    "original_telugu": 24,
+    "non_indian_language": 14,
+    "no_matching_movie_id": 23,
+    "ambiguous_movie_match": 2,
+    "movie_lookup_failed": 3,
+    "original_language_unconfirmed": 15,
+    "indian_origin_unconfirmed": 5,
+    "non_indian_film": 33,
+    "cast_mismatch": 6,
+    "title_mismatch": 1
+  },
   "limits": [
-    "Telugu audio is reported by a release index, not independently measured from video files.",
-    "Newest first by film release date, falling back to film release year. These are not Telugu OTT premiere dates.",
-    "Coverage is bounded to the configured number of source pages. Unknown or conflicting identities are excluded.",
-    "Wikidata supplies original language and country; Cinemeta independently checks country, title, TMDB ID and year.",
-    "Availability is not verified for a particular streaming subscription or country."
+    "OTT dates and Telugu audio are reported by OTTReleaseMovies, a third-party editorial source; actual audio tracks and regional subscriptions are not inspected.",
+    "Only dated, non-tentative movie entries with Telugu audio listed are considered. Series, explicit Telugu originals, and non-Indian films are excluded.",
+    "Original language uses Wikidata where available, otherwise the publisher must explicitly identify a non-Telugu original language. Unknown or conflicting originals are excluded.",
+    "Film identities use Cinemeta title, cast, country and year checks. Unmatched or ambiguous titles remain excluded and are reported in coverage data.",
+    "Coverage follows the source page and is not a guarantee of every platform or every Telugu dub. Source layout changes or outages can interrupt updates; the last successful deployment is preserved."
   ],
   "refreshWarnings": [
-    "tt12132908: Metadata source returned HTTP 504",
-    "tt11826240: Metadata source returned HTTP 504"
+    "Dark Secrets: Metadata HTTP 504",
+    "Surya S/O Krishnan (Re Release): Metadata HTTP 504",
+    "tt0161767: Metadata HTTP 504",
+    "Hamnet: Metadata HTTP 504",
+    "tt21908892: Metadata HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 9.156,
+  "durationSeconds": 53.057,
   "examples": [
+    {
+      "id": "tt36596965",
+      "name": "Mandaadi",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-08",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+    },
     {
       "id": "tt37535100",
       "name": "Bethlehem Kudumba Unit",
       "year": "2026",
+      "ottReleaseDate": "2026-10-02",
+      "platforms": [
+        "JioHotstar"
+      ],
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
-      "id": "tt33379543",
-      "name": "Jana Nayagan",
+      "id": "tt36931126",
+      "name": "Immortal",
       "year": "2026",
+      "ottReleaseDate": "2026-10-02",
+      "platforms": [
+        "Prime Video"
+      ],
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
     },
     {
       "id": "tt28541577",
-      "name": "Sardar 2",
+      "name": "Sardar - 2",
       "year": "2026",
+      "ottReleaseDate": "2026-10-01",
+      "platforms": [
+        "Prime Video"
+      ],
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
-      "id": "tt34794166",
-      "name": "Nishaanchi",
-      "year": "2025",
-      "originalLanguage": [
-        "Hindi"
-      ]
-    },
-    {
-      "id": "tt27441481",
-      "name": "Coolie",
-      "year": "2025",
+      "id": "tt37174734",
+      "name": "Angikaaram",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-25",
+      "platforms": [
+        "Sun NXT"
+      ],
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Wikidata original-language metadata"
     },
     {
-      "id": "tt27425164",
-      "name": "War 2",
-      "year": "2025",
-      "originalLanguage": [
-        "Hindi"
-      ]
-    },
-    {
-      "id": "tt27922706",
-      "name": "Chhaava",
-      "year": "2025",
-      "originalLanguage": [
-        "Hindi"
-      ]
-    },
-    {
-      "id": "tt21194868",
-      "name": "Dhoom Dhaam",
-      "year": "2025",
-      "originalLanguage": [
-        "Hindi"
-      ]
-    },
-    {
-      "id": "tt18926098",
-      "name": "VidaaMuyarchi",
-      "year": "2025",
+      "id": "tt41101621",
+      "name": "Habeebi",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-25",
+      "platforms": [
+        "SonyLIV"
+      ],
       "originalLanguage": [
         "Tamil"
-      ]
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
     },
     {
-      "id": "tt33240591",
-      "name": "Maaman",
-      "year": "2025",
+      "id": "tt36967234",
+      "name": "Mango Pachcha",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-25",
+      "platforms": [
+        "JioHotstar"
+      ],
       "originalLanguage": [
-        "Tamil"
-      ]
+        "Kannada"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
     },
     {
-      "id": "tt28075881",
-      "name": "Do Patti",
-      "year": "2024",
+      "id": "tt39667834",
+      "name": "Lust Stories 3",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-18",
+      "platforms": [
+        "Netflix"
+      ],
       "originalLanguage": [
         "Hindi"
-      ]
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
     },
     {
-      "id": "tt29461220",
-      "name": "Pani",
-      "year": "2024",
+      "id": "tt42262473",
+      "name": "Modha Rathiri",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-18",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+    },
+    {
+      "id": "tt39073377",
+      "name": "Ram and Leela",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-18",
+      "platforms": [
+        "Prime Video"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+    },
+    {
+      "id": "tt35323618",
+      "name": "The India Story: Slow Poison in Progress",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-18",
+      "platforms": [
+        "JioHotstar"
+      ],
+      "originalLanguage": [
+        "Hindi"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+    },
+    {
+      "id": "tt37510017",
+      "name": "Thudakkam",
+      "year": "2026",
+      "ottReleaseDate": "2026-09-18",
+      "platforms": [
+        "JioHotstar"
+      ],
       "originalLanguage": [
         "Malayalam"
-      ]
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
     }
   ]
 }

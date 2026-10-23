@@ -1,85 +1,76 @@
-# Telugu Dubs — Digital Catalog
+# Telugu Dubs — Latest OTT
 
-A catalog-only Stremio add-on for Indian films indexed with Telugu audio, excluding films whose original language includes Telugu. No streaming provider, debrid, TMDB key, MediaFusion account, or payment is required.
+A free catalog-only Stremio add-on for Indian films listed with Telugu audio. The source is the public release table at [OTTReleaseMovies](https://ottreleasemovies.com/). The catalog sorts by the website's **OTT release date**, newest first.
 
-**The add-on is live.** The first hosted refresh on 23 October 2026 returned **74 matching films from 565 candidates**, excluding 109 Telugu originals. Counts change as the upstream catalogs change.
+## Install
 
-## Install in Stremio
-
-Open https://josemsd7.github.io/telugu-dub-catalog/ and click **Install in Stremio**, then confirm installation in Stremio.
-
-Alternatively, paste this manifest URL into Stremio's add-on URL box:
+Open https://josemsd7.github.io/telugu-dub-catalog/ and click **Install in Stremio**. The existing manifest URL remains:
 
 ```text
 https://josemsd7.github.io/telugu-dub-catalog/manifest.json
 ```
 
-Automatic updates are scheduled every six hours. No manual list syncing or reinstallation is needed. Check https://josemsd7.github.io/telugu-dub-catalog/status.json for the latest successful refresh and coverage limits. GitHub can delay scheduled runs.
+The manifest exposes only a movie catalog. No playback, provider credentials, debrid service, paid API or subscription is required for this add-on.
 
-## What it verifies
+## Automatic updates
 
-1. Read the public MediaFusion `telugu_hdrip` and `telugu_dubbed` movie catalog endpoints. No stream endpoints are requested.
-2. Match each IMDb ID to Wikidata. Require an Indian country of origin and a known original language. Exclude any film with Telugu as an original language, missing language, conflicting identity, or mismatched title.
-3. Independently match country, title, available TMDB identifier, and year against Cinemeta. Unconfirmed films stay out.
-4. Expose only Stremio's `catalog` resource. Film details resolve through the user's normal IMDb-compatible metadata add-on.
+GitHub Actions fetches the release page every six hours and publishes the generated JSON and poster images through GitHub Pages. Install once; no manual list syncing is needed. Scheduled jobs can be delayed. A source-wide failure stops publication and keeps the previous deployment available.
 
-**Coverage limits:** Telugu audio is reported by the release index; it has not been measured from video tracks. The source does not supply exact Telugu OTT premiere dates. Order uses the film's release date, descending, with release year as fallback when the date is missing. These are not verified Telugu OTT premiere dates. Older films follow newer films. Metadata can contain errors, and strict checks omit some valid dubs. This does not claim a complete list of every Telugu digital release or regional streaming availability.
+- [Freshness, platform counts and source limits](https://josemsd7.github.io/telugu-dub-catalog/status.json)
+- [Included titles, OTT dates and excluded rows](https://josemsd7.github.io/telugu-dub-catalog/coverage.json)
+- [Workflow runs](https://github.com/josemsd7/telugu-dub-catalog/actions/workflows/catalog.yml)
 
-## Sorting and posters
+## What gets included
 
-The catalog sorts by Cinemeta's film release date, newest first. Missing dates fall back to the film release year; these are not Telugu OTT premiere dates. Source re-indexing no longer moves old films above newer releases.
+1. Read factual fields from the publisher's main release table: title, listed OTT date, platform, language/dubbing label, cast and source link. Article prose and platform artwork are not republished.
+2. Exclude future or tentative dates, subtitle-only listings, series, reality shows and explicit Telugu originals.
+3. Match the film to Cinemeta using title or supplied aliases, cast, country and year. Require confirmed Indian origin. Ambiguous or inconsistent identities are excluded.
+4. Use Wikidata original-language metadata when available. Otherwise the publisher must explicitly identify a non-Telugu original language, such as `Tamil to Telugu`. Unknown or conflicting originals stay excluded. Any confirmed Telugu original language causes exclusion, including bilingual Telugu originals.
+5. Order by the publisher's OTT date. A film's older cinema release date no longer moves it out of its new Telugu OTT release position. Source display names are preserved while IMDb IDs identify the matched films.
+6. Download working poster images and serve them from this add-on's own HTTPS host. Images must be under 100 kB. Alternate sources are attempted when a URL fails. A clearly marked PNG placeholder is used only when a particular film has no available image; such cases are reported in status. A total image-source outage stops deployment.
 
-Each hosted build checks poster images and copies valid images to the add-on's own HTTPS host. Images must be under 100 kB. A failed URL is retried using alternate sources. If no image is available for a particular film, a clearly marked PNG placeholder is used and reported in `status.json`. A total poster-source outage stops the deployment and preserves the previous version.
+## Coverage limits
 
-## Free hosting with one GitHub account
+This is an editorial-source catalog, not a direct audit of every streaming platform. OTT dates and Telugu audio are **reported by OTTReleaseMovies**. The add-on does not inspect video audio tracks, require a subscription, or verify availability in the viewer's country. A platform release date is not necessarily the first-ever Telugu digital premiere.
 
-The included GitHub Actions workflow refreshes the metadata every six hours and publishes JSON through GitHub Pages. Your computer can stay off. GitHub may delay scheduled jobs; this is automatic periodic refresh, not a fresh upstream scan every time you open Stremio.
+Only the source page's dated rows can be discovered. Missing or ambiguous identities and original languages can exclude valid dubs; `coverage.json` shows the excluded titles and reasons. A Telugu-only or generic multilingual label does not establish whether a film was originally Telugu. Such rows need independent original-language evidence. Titles not yet present in Cinemeta can also be omitted until a later update.
 
-**This repository and its hosted movie catalog are public.** The add-on contains no user account details or playback links. The following steps describe how to set up another copy.
+The scraper expects the publisher's release-table headers. A future layout change may require a code update. This setup automates normal refreshes; it is not a promise of complete coverage or zero future maintenance.
 
-1. Create a free account at https://github.com/signup if needed.
-2. Create a **public** repository named `telugu-dub-catalog`, default branch `main`.
-3. Upload the contents of this extracted folder, including `.github/workflows/catalog.yml`, `src/`, and `data/catalog.json`. Do not upload `data/token.txt` if local use has created it. A GitHub plugin connection can let an assistant help with this after publication is authorized.
-4. In the repository, open **Settings → Pages → Build and deployment → Source → GitHub Actions**. Under **Settings → Actions → General**, ensure GitHub Actions is enabled and the workflow may write repository contents.
-5. Open **Actions → Update and publish catalog → Run workflow**. When it completes, open the Pages URL shown by the deployment. The page provides **Install in Stremio** and the exact manifest URL.
-6. Install once. Subsequent successful scheduled runs update the same URL without syncing or reinstalling. Check `status.json` for freshness. If a run fails, the previous Pages deployment stays available.
+## Run locally
 
-Example URL shape only: `https://YOUR-USERNAME.github.io/telugu-dub-catalog/manifest.json`. This placeholder is not an installable hosted add-on.
-
-Regular commits store the refreshed data as part of building the catalog. No fake keepalive action is used. If failures leave the repository inactive for 60 days, GitHub can disable its schedule; re-enable it under Actions after fixing the source failure.
-
-## Use locally now
-
-Requires Node.js 22 or newer and Stremio desktop on the same computer.
+Requires Node.js 22+ and Python 3 (standard library only). No npm packages or API keys are needed.
 
 ```sh
 npm start
 ```
 
-Copy the printed **Manifest** URL into Stremio's add-on URL box. The supplied live snapshot loads immediately. The server refreshes at startup if stale and every six hours while running. This mode needs your computer and this process to remain on. It binds only to `127.0.0.1`; phone/TV devices need hosted HTTPS.
-
-The local manifest also offers title search and original-language filters. The GitHub Pages version offers browse and pagination only.
-
-## Verify or change coverage
+Use the printed manifest URL in Stremio desktop on the same computer. The process binds to `127.0.0.1`; it must stay running for local use. Phone and TV devices should use hosted HTTPS.
 
 ```sh
 npm test
 npm run verify
-npm run export
+npm run build
 ```
 
-`validation-live.json` records counts, exclusions, examples, errors, and duration from the live check. `public/` contains the static Stremio endpoint files after export.
+For a local static build, set `ADDON_BASE_URL` to the directory URL where the generated `public/` files will be served. GitHub Actions derives that URL from the repository name automatically.
 
-Default coverage is three 100-item pages from each of two source catalogs. Set `SOURCE_PAGES` between 1 and 6 to change coverage. This increases metadata calls and is not a guarantee of completeness. Known identities are cached for seven days; missing identities are retried after six hours. A single independent film check failure excludes that film pending retry; a source-wide failure stops the refresh and preserves the previous successful snapshot/deployment.
+## Host another copy
 
-## Primary references
+GitHub Pages on the free plan requires a public repository. Publishing exposes the add-on code and factual catalog, not personal account details or playback links.
 
-- Public source endpoints: https://mediafusion.elfhosted.com/catalog/movie/telugu_hdrip.json and https://mediafusion.elfhosted.com/catalog/movie/telugu_dubbed.json
-- MediaFusion: https://github.com/mhdzumair/MediaFusion
-- Wikidata original-language property: https://www.wikidata.org/wiki/Property:P364
+1. Copy this repository into a public repository under your account.
+2. Set **Settings → Pages → Source → GitHub Actions**.
+3. Enable Actions and allow the workflow to write repository contents.
+4. Run **Update and publish catalog** once. Later refreshes are scheduled automatically.
+
+The workflow stores updated factual metadata and caches in `data/catalog.json`. Successful movie searches and film identity checks are cached for seven days; unsuccessful searches and missing original-language identities are retried after six hours. Failed network requests are retried on a subsequent run. A parser failure, empty verified catalog, or total poster outage preserves the previous Pages deployment.
+
+## Sources and code
+
+- Release discovery, Telugu dubbing labels, platform and OTT dates: https://ottreleasemovies.com/
+- Film IDs, cast, country and poster metadata: https://v3-cinemeta.strem.io/
+- Original-language and country metadata: https://www.wikidata.org/
 - Stremio catalog protocol: https://stremio.github.io/stremio-addon-sdk/api/requests/defineCatalogHandler.html
-- Stremio's static add-on example: https://github.com/Stremio/stremio-static-addon-example
-- GitHub Pages on GitHub Free: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
-- GitHub schedule limits: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
 
-The add-on code is MIT licensed. Wikidata structured data is CC0. Third-party services and poster URLs retain their own terms. Only factual metadata is retained; MediaFusion descriptions and playback links are not copied.
+The add-on code is MIT licensed. Third-party metadata and artwork retain their respective ownership and terms. Source links are provided for factual release listings. This project does not claim endorsement by the publisher or streaming platforms.

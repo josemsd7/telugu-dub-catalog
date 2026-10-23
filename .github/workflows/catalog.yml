@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - run: python3 --version
       - run: npm test
       - name: Refresh live metadata
         run: npm run verify
