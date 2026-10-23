@@ -2,7 +2,19 @@
 
 A catalog-only Stremio add-on for Indian films indexed with Telugu audio, excluding films whose original language includes Telugu. No streaming provider, debrid, TMDB key, MediaFusion account, or payment is required.
 
-**Live verification on 23 October 2026 returned 75 matching films from 564 distinct candidates.** This is a tested catalog adapter, not a hosted install link yet. The included snapshot makes local use possible immediately; it is replaced by subsequent live refreshes.
+**The add-on is live.** The first hosted refresh on 23 October 2026 returned **74 matching films from 565 candidates**, excluding 109 Telugu originals. Counts change as the upstream catalogs change.
+
+## Install in Stremio
+
+Open https://josemsd7.github.io/telugu-dub-catalog/ and click **Install in Stremio**, then confirm installation in Stremio.
+
+Alternatively, paste this manifest URL into Stremio's add-on URL box:
+
+```text
+https://josemsd7.github.io/telugu-dub-catalog/manifest.json
+```
+
+Automatic updates are scheduled every six hours. No manual list syncing or reinstallation is needed. Check https://josemsd7.github.io/telugu-dub-catalog/status.json for the latest successful refresh and coverage limits. GitHub can delay scheduled runs.
 
 ## What it verifies
 
@@ -17,7 +29,7 @@ A catalog-only Stremio add-on for Indian films indexed with Telugu audio, exclud
 
 The included GitHub Actions workflow refreshes the metadata every six hours and publishes JSON through GitHub Pages. Your computer can stay off. GitHub may delay scheduled jobs; this is automatic periodic refresh, not a fresh upstream scan every time you open Stremio.
 
-**Publishing makes the source code and movie catalog public. Do this only if you approve public hosting.** The package contains no user account details or playback links. It has not been published for you.
+**This repository and its hosted movie catalog are public.** The add-on contains no user account details or playback links. The following steps describe how to set up another copy.
 
 1. Create a free account at https://github.com/signup if needed.
 2. Create a **public** repository named `telugu-dub-catalog`, default branch `main`.
