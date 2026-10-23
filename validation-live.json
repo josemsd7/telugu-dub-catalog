@@ -1,12 +1,12 @@
 {
   "version": "0.1.0",
-  "verifiedMovieCount": 75,
-  "checkedAt": "2026-10-23T10:12:48.743Z",
+  "verifiedMovieCount": 74,
+  "checkedAt": "2026-10-23T11:25:09.525Z",
   "stale": false,
-  "candidateCount": 564,
+  "candidateCount": 565,
   "exclusions": {
-    "missing_identity": 66,
     "not_confirmed_indian": 232,
+    "missing_identity": 68,
     "missing_original_language": 73,
     "canonical_title_mismatch": 5,
     "original_telugu": 109,
@@ -25,7 +25,7 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 15.902,
+  "durationSeconds": 1.341,
   "examples": [
     {
       "id": "tt25153418",
@@ -84,19 +84,19 @@
       ]
     },
     {
-      "id": "tt29461220",
-      "name": "Pani",
-      "year": "2024",
-      "originalLanguage": [
-        "Malayalam"
-      ]
-    },
-    {
       "id": "tt5970844",
       "name": "Thugs of Hindostan",
       "year": "2018",
       "originalLanguage": [
         "Hindi"
+      ]
+    },
+    {
+      "id": "tt29461220",
+      "name": "Pani",
+      "year": "2024",
+      "originalLanguage": [
+        "Malayalam"
       ]
     },
     {
