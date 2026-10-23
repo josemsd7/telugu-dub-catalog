@@ -1,0 +1,17 @@
+{
+  "sortOrder": "film_release_date_desc",
+  "posters": {
+    "total": 74,
+    "actualPosters": 74,
+    "fallbackPosters": 0,
+    "fallbackIds": [],
+    "checkedAt": "2026-10-23T11:37:40.552Z"
+  },
+  "validImages": 74,
+  "maximumPosterBytes": 91930,
+  "smallestDimensions": [
+    300,
+    426
+  ],
+  "automatedTests": 13
+}

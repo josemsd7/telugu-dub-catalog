@@ -1,4 +1,4 @@
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 export const LANGUAGES = {Q5885:'Tamil',Q1568:'Hindi',Q36236:'Malayalam',Q33673:'Kannada',Q5146:'Punjabi',Q9610:'Bengali',Q1571:'Marathi',Q33810:'Odia',Q1860:'English'};
 const UA = 'TeluguDubCatalog/0.1 (personal non-commercial catalog metadata; no playback requests)';
 const MAX_AGE = 6 * 60 * 60 * 1000;
@@ -68,6 +68,20 @@ export function canonicalReason(item, r, canonical) {
 
 function safeImage(url) {try {const u=new URL(url);return u.protocol==='https:'?u.href:undefined;}catch{return undefined;}}
 
+export function releaseDate(value) {
+  const day=String(value||'').slice(0,10);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
+  const date=new Date(day+'T00:00:00.000Z');
+  return Number.isFinite(date.getTime())&&date.toISOString().startsWith(day)?date.toISOString():null;
+}
+
+export function newestFirst(movies) {
+  return [...movies].sort((a,b)=>{
+    const date=x=>releaseDate(x.released)||`${yearOf(x.releaseInfo)||'0000'}-01-01T00:00:00.000Z`;
+    return date(b).localeCompare(date(a))||a.name.localeCompare(b.name)||a.id.localeCompare(b.id);
+  });
+}
+
 export function assemble(candidates, identities, canonicals, checkedAt) {
   const counts={},movies=[],seen=new Set();
   for(const item of candidates) {
@@ -77,13 +91,14 @@ export function assemble(candidates, identities, canonicals, checkedAt) {
     if(reason){counts[reason]=(counts[reason]||0)+1;continue;}
     const languages=identity.languages.map(id=>LANGUAGES[id]||'Other');
     const canonical=canonicals[item.id];
-    movies.push({id:item.id,type:'movie',name:plain(canonical.name),poster:safeImage(item.poster),releaseInfo:canonical.year||yearOf(item.releaseInfo)||undefined,
-      description:`Indian film. Original language: ${languages.join(', ')}. Indexed with Telugu audio in MediaFusion's ${item.sourceCatalog==='telugu_hdrip'?'Telugu HD':'Telugu dubbed'} catalog. Order follows recently indexed releases; a Telugu OTT premiere date is not supplied.`,
+    const posterCandidates=[...new Set([safeImage(canonical.poster),`https://images.metahub.space/poster/small/${item.id}/img`,safeImage(item.poster)].filter(Boolean))];
+    movies.push({id:item.id,type:'movie',name:plain(canonical.name),poster:posterCandidates[0],posterCandidates,releaseInfo:canonical.year||yearOf(item.releaseInfo)||undefined,released:releaseDate(canonical.released)||undefined,
+      description:`Indian film. Original language: ${languages.join(', ')}. Indexed with Telugu audio in MediaFusion's ${item.sourceCatalog==='telugu_hdrip'?'Telugu HD':'Telugu dubbed'} catalog. Sorted by film release date, with release year as fallback; the exact Telugu OTT premiere date is not supplied.`,
       genres:languages,originalLanguageIds:identity.languages,sourceCatalog:item.sourceCatalog,wikidata:identity.items[0],sourceRank:item.sourceRank,identityCheckedAt:identity.checkedAt});
   }
-  return {checkedAt,movies,counts,candidateCount:candidates.length,limits:[
+  return {checkedAt,movies:newestFirst(movies),counts,candidateCount:candidates.length,sortOrder:'film_release_date_desc',limits:[
     'Telugu audio is reported by a release index, not independently measured from video files.',
-    'Ordering follows MediaFusion last_stream_added; this is not the exact first Telugu OTT release date.',
+    'Newest first by film release date, falling back to film release year. These are not Telugu OTT premiere dates.',
     'Coverage is bounded to the configured number of source pages. Unknown or conflicting identities are excluded.',
     'Wikidata supplies original language and country; Cinemeta independently checks country, title, TMDB ID and year.',
     'Availability is not verified for a particular streaming subscription or country.'
@@ -123,13 +138,13 @@ export async function refresh(previous={}, options={}) {
     // Cache absent identities briefly without ever displaying them.
     for(const id of batches[i])identities[id]=found[id]||{items:[],names:[],languages:[],countries:[],tmdbIds:[],years:[],checkedAt};
   });
-  const toCheck=candidates.filter(x=>!wikiReason(x,identities[x.id])&&(!canonicals[x.id]||now-Date.parse(canonicals[x.id].checkedAt)>7*86400000)).slice(0,maxNew);
+  const toCheck=candidates.filter(x=>!wikiReason(x,identities[x.id])&&(!canonicals[x.id]||canonicals[x.id].schemaVersion!==2||now-Date.parse(canonicals[x.id].checkedAt)>7*86400000)).slice(0,maxNew);
   const refreshWarnings=[];
   await parallelMap(toCheck,3,async item=>{
     try {
       const data=await jsonFetch(`https://v3-cinemeta.strem.io/meta/movie/${item.id}.json`,fetcher),m=data.meta;
       if(!m||m.id!==item.id)throw new Error('Invalid independent identity response');
-      canonicals[item.id]={name:plain(m.name),countries:String(m.country||'').split(',').map(x=>x.trim().toLowerCase()),tmdbId:m.moviedb_id?String(m.moviedb_id):null,year:yearOf(m.releaseInfo||m.year||m.released),checkedAt};
+      canonicals[item.id]={name:plain(m.name),countries:String(m.country||'').split(',').map(x=>x.trim().toLowerCase()),tmdbId:m.moviedb_id?String(m.moviedb_id):null,year:yearOf(m.releaseInfo||m.year||m.released),released:releaseDate(m.released),poster:safeImage(m.poster),schemaVersion:2,checkedAt};
     } catch(error) {
       // A single unavailable film must not prevent other identities being checked.
       refreshWarnings.push(`${item.id}: ${String(error.message||error).slice(0,160)}`);
@@ -142,7 +157,7 @@ export async function refresh(previous={}, options={}) {
 }
 
 export function manifest() {
-  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Digital Catalog',description:'Catalog only. Indian films indexed with Telugu audio; Telugu originals and unverified identities excluded. Recent-index ordering, not exact OTT premiere dates. Metadata: MediaFusion, Wikidata and Cinemeta.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Digital',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
+  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Digital Catalog',description:'Catalog only. Indian films indexed with Telugu audio; Telugu originals and unverified identities excluded. Newest first by film release date/year. Exact Telugu OTT premiere dates unavailable. Metadata: MediaFusion, Wikidata and Cinemeta.',resources:['catalog'],types:['movie'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Telugu Dubs — Digital',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]}],behaviorHints:{configurable:false}};
 }
 
 export function catalog(data,extra='') {
@@ -150,12 +165,12 @@ export function catalog(data,extra='') {
   const params=new URLSearchParams(extra.includes('=')?extra:decodeURIComponent(extra));
   const rawSkip=params.get('skip')||'0';if(!/^\d{1,6}$/.test(rawSkip))throw new Error('Invalid skip');
   const skip=Number(rawSkip),search=normalize((params.get('search')||'').slice(0,200)),genre=params.get('genre');
-  const items=(data.movies||[]).filter(x=>(!search||normalize(x.name).includes(search))&&(!genre||x.genres.includes(genre)));
-  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,sourceCatalog,wikidata,sourceRank,identityCheckedAt,...meta})=>meta);
+  const items=newestFirst(data.movies||[]).filter(x=>(!search||normalize(x.name).includes(search))&&(!genre||x.genres.includes(genre)));
+  const metas=items.slice(skip,skip+100).map(({originalLanguageIds,sourceCatalog,wikidata,sourceRank,identityCheckedAt,posterCandidates,...meta})=>meta);
   return {metas,cacheMaxAge:600,staleRevalidate:3600};
 }
 
-export function status(data) {return {version:VERSION,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,candidateCount:data.candidateCount||0,exclusions:data.counts||{},sourcePagesPerCatalog:data.sourcePagesPerCatalog||0,limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};}
+export function status(data) {return {version:VERSION,sortOrder:data.sortOrder||null,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,candidateCount:data.candidateCount||0,exclusions:data.counts||{},sourcePagesPerCatalog:data.sourcePagesPerCatalog||0,limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};}
 
 export async function handle(request,env,store,context={}) {
   const token=env.ADDON_TOKEN;

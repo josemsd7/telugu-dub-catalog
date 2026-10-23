@@ -23,7 +23,13 @@ Automatic updates are scheduled every six hours. No manual list syncing or reins
 3. Independently match country, title, available TMDB identifier, and year against Cinemeta. Unconfirmed films stay out.
 4. Expose only Stremio's `catalog` resource. Film details resolve through the user's normal IMDb-compatible metadata add-on.
 
-**Coverage limits:** Telugu audio is reported by the release index; it has not been measured from video tracks. The source does not supply exact Telugu OTT premiere dates. Order follows newly indexed releases, not a guaranteed first digital premiere chronology. Older films can appear near the top when newly indexed. Metadata can contain errors, and strict checks omit some valid dubs. This does not claim a complete list of every Telugu digital release or regional streaming availability.
+**Coverage limits:** Telugu audio is reported by the release index; it has not been measured from video tracks. The source does not supply exact Telugu OTT premiere dates. Order uses the film's release date, descending, with release year as fallback when the date is missing. These are not verified Telugu OTT premiere dates. Older films follow newer films. Metadata can contain errors, and strict checks omit some valid dubs. This does not claim a complete list of every Telugu digital release or regional streaming availability.
+
+## Sorting and posters
+
+The catalog sorts by Cinemeta's film release date, newest first. Missing dates fall back to the film release year; these are not Telugu OTT premiere dates. Source re-indexing no longer moves old films above newer releases.
+
+Each hosted build checks poster images and copies valid images to the add-on's own HTTPS host. Images must be under 100 kB. A failed URL is retried using alternate sources. If no image is available for a particular film, a clearly marked PNG placeholder is used and reported in `status.json`. A total poster-source outage stops the deployment and preserves the previous version.
 
 ## Free hosting with one GitHub account
 

@@ -4,8 +4,9 @@ import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {join} from 'node:path';
-import {wikiReason,canonicalReason,assemble,manifest,catalog,handle,refresh} from './src/core.mjs';
+import {wikiReason,canonicalReason,assemble,manifest,catalog,handle,refresh,newestFirst,releaseDate} from './src/core.mjs';
 import {exportStatic} from './export.mjs';
+import {cachePosters} from './posters.mjs';
 
 const stamp='2026-10-23T10:00:00Z';
 const item={id:'tt1234567',name:'Example',releaseInfo:'2025',sourceCatalog:'telugu_dubbed',sourceRank:0};
@@ -31,6 +32,17 @@ test('fails closed on missing or conflicting film identities',()=>{
 test('manifest exposes only a movie catalog',()=>{
   assert.deepEqual(manifest().resources,['catalog']);
   assert.deepEqual(manifest().types,['movie']);
+});
+test('new film dates take priority over source indexing order, with a year fallback',()=>{
+  const film=(id,releaseInfo,released,sourceRank)=>({id,name:id,releaseInfo,released,sourceRank});
+  const movies=[film('old','2021','2021-12-31',0),film('late','2025','2025-12-31',1),film('unknown-day','2026',null,2),film('new','2026','2026-08-21',99),film('early','2026','2026-01-09',9)];
+  assert.deepEqual(newestFirst(movies).map(x=>x.id),['new','early','unknown-day','late','old']);
+  assert.equal(releaseDate('2026-02-31'),null);
+});
+test('newest-first ordering happens before pagination even for an older cached snapshot',()=>{
+  const movies=Array.from({length:173},(_,i)=>({...accepted.movies[0],id:'tt'+(1000000+i),name:'Film '+i,releaseInfo:i<73?'2020':'2026',released:undefined}));
+  assert.equal(catalog({movies}).metas.every(x=>x.releaseInfo==='2026'),true);
+  assert.equal(catalog({movies},'skip=100').metas.every(x=>x.releaseInfo==='2020'),true);
 });
 test('catalog paginates and searches, strips audit fields, rejects invalid offsets',()=>{
   const movies=Array.from({length:173},(_,i)=>({...accepted.movies[0],id:'tt'+(1000000+i),name:'Film '+i}));
@@ -79,5 +91,35 @@ test('static hosting exports only supported routes with all 75 supplied films',a
     const status=JSON.parse(await readFile(join(directory,'status.json'),'utf8'));
     assert.equal(status.staleAfter,'2026-10-23T16:00:00.000Z');
     assert.equal('stale' in status,false);
+  } finally {await rm(directory,{recursive:true,force:true});}
+});
+
+test('broken poster URLs fall back to a verified image and all published URLs use our host',async()=>{
+  const directory=await mkdtemp(join(tmpdir(),'telugu-poster-test-'));
+  try {
+    const destination=pathToFileURL(directory+'/');
+    const png=Buffer.from(await readFile(new URL('./src/fallback-poster.base64',import.meta.url),'utf8'),'base64');
+    const movies=[{...accepted.movies[0],posterCandidates:['https://live.metahub.space/broken','https://m.media-amazon.com/working.png']},{...accepted.movies[0],id:'tt7654321',posterCandidates:[],poster:null}];
+    const data={...accepted,movies};await exportStatic(data,destination);
+    const fetcher=async url=>String(url).endsWith('working.png')?new Response(png,{headers:{'content-type':'image/png'}}):new Response('unavailable',{status:403});
+    const stats=await cachePosters(data,destination,'https://addon.example/catalog/',{fetcher});
+    assert.equal(stats.actualPosters,1);assert.equal(stats.fallbackPosters,1);
+    const page=JSON.parse(await readFile(join(directory,'catalog/movie/telugu-dubbed.json'),'utf8'));
+    for(const movie of page.metas){
+      assert.match(movie.poster,/^https:\/\/addon\.example\/catalog\/posters\/tt\d+-[a-f0-9]+\.png$/);
+      assert.equal('posterCandidates' in movie,false);
+      const image=await readFile(join(directory,'posters',movie.poster.split('/').pop()));
+      assert.equal(image.subarray(0,8).equals(png.subarray(0,8)),true);
+    }
+    const status=JSON.parse(await readFile(join(directory,'status.json'),'utf8'));
+    assert.equal(status.posters.fallbackPosters,1);
+  } finally {await rm(directory,{recursive:true,force:true});}
+});
+
+test('a total poster source outage stops publication',async()=>{
+  const directory=await mkdtemp(join(tmpdir(),'telugu-poster-outage-'));
+  try {
+    const destination=pathToFileURL(directory+'/');await exportStatic(accepted,destination);
+    await assert.rejects(cachePosters(accepted,destination,'https://addon.example/',{fetcher:async()=>new Response('',{status:503})}),/All poster sources unavailable/);
   } finally {await rm(directory,{recursive:true,force:true});}
 });
