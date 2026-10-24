@@ -17,7 +17,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-10-24T12:49:27.772Z",
+      "checkedAt": "2026-10-24T18:43:24.825Z",
       "rowCount": 247,
       "rawRowCount": 248,
       "pagesFetched": 1,
@@ -30,7 +30,7 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-10-24T12:49:27.772Z",
+      "checkedAt": "2026-10-24T18:43:24.825Z",
       "rowCount": 240,
       "rawRowCount": 1140,
       "pagesFetched": 1,
@@ -42,16 +42,13 @@
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
-      "state": "partial",
-      "checkedAt": "2026-10-24T12:49:27.772Z",
+      "state": "ok",
+      "checkedAt": "2026-10-24T18:43:24.825Z",
       "rowCount": 387,
-      "rawRowCount": 380,
-      "pagesFetched": 19,
+      "rawRowCount": 420,
+      "pagesFetched": 21,
       "pagesAvailable": 25,
-      "errors": [
-        "Page 6: The operation was aborted due to timeout",
-        "Page 11: The operation was aborted due to timeout"
-      ],
+      "errors": [],
       "movieCount": 67
     },
     {
@@ -68,7 +65,7 @@
   "duplicatesMerged": 46,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 128,
-  "checkedAt": "2026-10-24T12:49:27.772Z",
+  "checkedAt": "2026-10-24T18:43:24.825Z",
   "stale": false,
   "sourceRowCount": 874,
   "candidateCount": 544,
@@ -94,9 +91,8 @@
     "non_indian_language": 15,
     "missing_ott_date": 3,
     "upcoming": 1,
+    "no_matching_movie_id": 70,
     "ambiguous_movie_match": 45,
-    "no_matching_movie_id": 69,
-    "movie_lookup_failed": 1,
     "non_indian_film": 52,
     "indian_origin_unconfirmed": 5,
     "country_conflict": 2,
@@ -116,15 +112,10 @@
     "SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub."
   ],
   "refreshWarnings": [
-    "tt32887788: Metadata HTTP 504",
-    "Chinna Chinni Aasai: Metadata HTTP 504",
-    "tt4083140: Metadata HTTP 504",
-    "tt37962245: Metadata HTTP 504",
-    "tt9289086: Metadata HTTP 504",
-    "tt35144943: Metadata HTTP 504"
+    "tt37763027: Metadata HTTP 504"
   ],
   "lastError": null,
-  "durationSeconds": 281.386,
+  "durationSeconds": 121.789,
   "examples": [
     {
       "id": "tt38915678",
