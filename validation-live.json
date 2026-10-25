@@ -17,7 +17,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-10-25T06:51:40.237Z",
+      "checkedAt": "2026-10-25T12:48:48.903Z",
       "rowCount": 247,
       "rawRowCount": 248,
       "pagesFetched": 1,
@@ -30,7 +30,7 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-10-25T06:51:40.237Z",
+      "checkedAt": "2026-10-25T12:48:48.903Z",
       "rowCount": 240,
       "rawRowCount": 1142,
       "pagesFetched": 1,
@@ -43,7 +43,7 @@
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-10-25T06:51:40.237Z",
+      "checkedAt": "2026-10-25T12:48:48.903Z",
       "rowCount": 385,
       "rawRowCount": 420,
       "pagesFetched": 21,
@@ -65,7 +65,7 @@
   "duplicatesMerged": 46,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 128,
-  "checkedAt": "2026-10-25T06:51:40.237Z",
+  "checkedAt": "2026-10-25T12:48:48.903Z",
   "stale": false,
   "sourceRowCount": 872,
   "candidateCount": 542,
@@ -111,9 +111,11 @@
     "A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.",
     "SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub."
   ],
-  "refreshWarnings": [],
+  "refreshWarnings": [
+    "tt9289086: The operation was aborted due to timeout"
+  ],
   "lastError": null,
-  "durationSeconds": 27.486,
+  "durationSeconds": 102.502,
   "examples": [
     {
       "id": "tt38915678",
