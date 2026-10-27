@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseSource} from './src/source-refresh.mjs';
-import {cleanSeriesTitle,seriesSeason,seriesSourceReason,parseSeriesFacts,mergeSeriesListings,refreshSeries} from './src/series-refresh.mjs';
+import {cleanSeriesTitle,seriesSeason,seriesSourceReason,parseSeriesFacts,mergeSeriesListings,refreshSeries,assessSeries} from './src/series-refresh.mjs';
 import {seriesCatalog} from './src/series-core.mjs';
 import {manifest,catalog,handle} from './src/core.mjs';
 import {exportStatic} from './export.mjs';
@@ -83,4 +83,20 @@ test('series identities choose the Indian namesake and verified season before te
  const previous={searchCache:{example:{hits:[{id:india.id,name:india.name},{id:foreign.id,name:foreign.name}],checkedAt}},metadataCache:{[india.id]:india,[foreign.id]:foreign},identities:{[india.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const result=await refreshSeries(previous,{now,source:{rows:[r]},fetcher:async()=>{throw new Error('Unexpected fetch');}});
  assert.equal(result.series.length,1);assert.equal(result.series[0].id,india.id);assert.deepEqual(result.series[0].reportedSeasons,[2]);
+});
+
+test('a lone English-original public field cannot relabel an Indian regional original',()=>{
+ const match={meta:{name:'Example',countries:['india'],cast:['Actor One'],tmdbId:'12'},titleScore:100,castMatches:1};
+ const facts={title:'Example',countries:['india'],languageIds:['Q1860'],sourceUrl:'https://www.themoviedb.org/tv/12'};
+ assert.equal(assessSeries(row,match,{items:[],languages:[],countries:[],tmdbIds:[]},facts).reason,'original_language_conflict');
+ const generic={...row,languageText:'Hindi, Tamil, Telugu'};
+ assert.equal(assessSeries(generic,match,{items:[],languages:[],countries:[],tmdbIds:[]},facts).reason,'english_original_uncorroborated');
+ assert.equal(assessSeries({...row,languageText:'English to Telugu'},match,{items:[],languages:[],countries:[],tmdbIds:[]},facts).reason,null);
+});
+test('a name-only source card cannot override a conflicting host on another release source',async()=>{
+ const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt);
+ const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],year:'2020',releaseInfo:'2020-',cast:['Different Host'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
+ const previous={searchCache:{example:{hits:[{id:meta.id,name:meta.name}],checkedAt}},metadataCache:{[meta.id]:meta},identities:{[meta.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
+ const source={rows:[{...row,castText:''},{...row,title:'Example Telugu',castText:'Actor One',languageText:'Telugu'}]};
+ await assert.rejects(refreshSeries(previous,{now,source,fetcher:async()=>{throw new Error('Unexpected fetch');}}),/No verified series/);
 });
