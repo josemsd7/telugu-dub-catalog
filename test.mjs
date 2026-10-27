@@ -126,8 +126,9 @@ test('OTT dates take priority over original cinema dates and source table order'
   const b={...movie,id:'tt2',name:'B',released:'2020-01-01',ottReleaseDate:'2026-10-23'};
   assert.deepEqual(newestFirst([a,b]).map(x=>x.id),['tt2','tt1']);
 });
-test('manifest exposes only a movie catalog',()=>{
-  assert.deepEqual(manifest().resources,['catalog']);assert.deepEqual(manifest().types,['movie']);
+test('manifest keeps movies and series in separate catalogs',()=>{
+  assert.deepEqual(manifest().resources,['catalog']);assert.deepEqual(manifest().types,['movie','series']);
+  assert.deepEqual(manifest().catalogs.map(x=>[x.type,x.id]),[['movie','telugu-dubbed'],['series','telugu-dubbed-series']]);
 });
 test('pagination happens after OTT sorting and audit fields are kept out of Stremio responses',()=>{
   const movies=Array.from({length:173},(_,i)=>({...movie,id:'tt'+(1000000+i),name:'Film '+i,ottReleaseDate:i<73?'2026-06-01':'2026-10-08'}));
@@ -241,3 +242,4 @@ test('a total poster source outage stops publication',async()=>{
     await assert.rejects(cachePosters(accepted,destination,'https://addon.example/',{fetcher:async()=>new Response('',{status:503})}),/All poster sources unavailable/);
   } finally {await rm(directory,{recursive:true,force:true});}
 });
+

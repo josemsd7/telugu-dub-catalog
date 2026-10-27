@@ -31,11 +31,16 @@ jobs:
       - run: npm test
       - name: Refresh live metadata
         run: npm run verify
+      - name: Refresh series metadata
+        run: |
+          if ! node verify-series.mjs; then
+            node -e "const d=JSON.parse(require('fs').readFileSync('data/series.json'));if(!d.series?.length)process.exit(1);console.warn('Series refresh failed; keeping previous series snapshot from '+d.checkedAt)"
+          fi
       - name: Save the updated catalog
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/catalog.json validation-live.json
+          git add data/catalog.json data/series.json validation-live.json
           if ! git diff --cached --quiet; then
             git commit -m 'Update live catalog metadata [skip ci]'
             git push
@@ -48,3 +53,4 @@ jobs:
       - name: Publish catalog
         id: deployment
         uses: actions/deploy-pages@v4
+

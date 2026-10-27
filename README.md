@@ -1,6 +1,6 @@
 # Telugu Dubs — Latest OTT
 
-A free catalog-only Stremio add-on for Indian films reported as available with Telugu audio, excluding Telugu originals. It combines release listings from **OTTReleaseMovies, Trendraja and Sacnilk** and refreshes automatically every six hours.
+A free catalog-only Stremio add-on for Indian films reported as available with Telugu audio, excluding Telugu originals. It combines release listings from **OTTReleaseMovies, Trendraja and Sacnilk** and refreshes automatically every six hours. A second, separate catalog now covers Indian series and TV shows listed with Telugu audio, with the same exclusion of Telugu originals.
 
 ## Install
 
@@ -12,7 +12,20 @@ https://josemsd7.github.io/telugu-dub-catalog/manifest.json
 
 No playback, provider login, debrid service, paid API, API key or additional account is required. GitHub Actions runs the updates independently of ChatGPT or any OpenAI API.
 
-## Discovery and coverage
+## Two separate catalogs
+
+The same manifest exposes **Available in Telugu** (`movie/telugu-dubbed`) and **Available in Telugu — Series & TV** (`series/telugu-dubbed-series`). Reinstall the add-on from the existing install page if Stremio has cached the old one-catalog manifest. Movies never enter the series response, and series never enter the movie response.
+
+The series catalog combines OTTReleaseMovies and Trendraja series rows with [Sacnilk’s public series/season cards](https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries). It uses Cinemeta series identities, Wikidata TV IDs and public TMDB **TV** pages; films with matching names or numeric TMDB movie IDs are not used as shows. Source-listed season numbers must exist in released Cinemeta episodes. Telugu originals and non-Indian series are excluded, matching the existing film scope. Unknown or conflicting matches stay excluded.
+
+There is one entry per IMDb series ID. Ordering uses the latest source-listed season release, taking the earliest reported date within each season. Source evidence is season-specific: a listed Telugu season does not confirm all seasons or all episodes. Live channels are outside this catalog. Static hosting supports browsing and pagination, not dynamic search.
+
+Series sources and identity caches are stored separately in `data/series.json`. Series refresh failure preserves the previous series snapshot. Both catalogs refresh on the existing six-hour workflow and use hosted poster images.
+
+- [Series source status and freshness](https://josemsd7.github.io/telugu-dub-catalog/series/status.json)
+- [Series coverage and exclusions](https://josemsd7.github.io/telugu-dub-catalog/series/coverage.json)
+
+## Movie discovery and coverage
 
 The latest-releases catalog covers a **rolling 365 days of source-listed OTT dates**. The publisher pages can contain older archives; those older rows are outside this catalog's scope.
 
@@ -84,3 +97,4 @@ GitHub Pages on the free plan requires a public repository. Publishing exposes t
 - https://stremio.github.io/stremio-addon-sdk/api/requests/defineCatalogHandler.html
 
 The code is MIT licensed. Third-party metadata and artwork retain their respective ownership and terms. Source links are provided for factual release listings. This project does not claim endorsement by the publishers or streaming platforms.
+

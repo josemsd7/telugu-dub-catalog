@@ -30,9 +30,10 @@ export async function discoverSources(previous={},options={}) {
     try{
       const first=await page(source);let rows=[...first.rows],pageCount=1,expectedPages=1;
       const errors=[];
-      if(source.key==='sacnilk'){
+      if(source.key==='sacnilk'||source.key==='sacnilk-series'){
         expectedPages=first.totalPages||1;
-        if(expectedPages>MAX_PAGES)throw new Error(`Pagination exceeds verified limit (${MAX_PAGES})`);
+        const pageLimit=options.maxPages||MAX_PAGES;
+        if(expectedPages>pageLimit)throw new Error(`Pagination exceeds verified limit (${pageLimit})`);
         // Cards are newest first. Stop once a full page is older than the window.
         let reachedEnd=first.rows.every(r=>r.ottReleaseDate&&r.ottReleaseDate<windowStart);
         for(let start=2;start<=expectedPages&&!reachedEnd;start+=2){
@@ -66,6 +67,7 @@ export async function discoverSources(previous={},options={}) {
   if(!fresh)throw new Error('All release sources failed; preserving last successful catalog');
   const rows=Object.values(snapshots).flatMap(s=>s.rows);
   if(!rows.length)throw new Error('Release sources returned no recent rows; preserving last successful catalog');
-  statuses.push({key:'svteluguott',name:'SV Telugu OTT',url:'https://svteluguott.in/ott-movies',state:'disabled',rowCount:0,error:'Automated access returned HTTP 403 during validation on 2026-10-23; no verified live adapter is enabled.'});
+  if(!options.sources)statuses.push({key:'svteluguott',name:'SV Telugu OTT',url:'https://svteluguott.in/ott-movies',state:'disabled',rowCount:0,error:'Automated access returned HTTP 403 during validation on 2026-10-23; no verified live adapter is enabled.'});
   return {rows,sourceRowCount:rows.length,snapshots:compactSnapshots(snapshots),statuses,windowStart,historyDays:365};
 }
+

@@ -45,15 +45,16 @@ export async function cachePosters(data,destination,baseUrl,options={}) {
     urls.set(movie.id,new URL('posters/'+name,base).href);
   });
   if(failures.length===data.movies.length)throw new Error('All poster sources unavailable; preserving the previous deployment');
-  const catalogFolder=new URL('catalog/movie/telugu-dubbed/',destination);
-  const files=[new URL('catalog/movie/telugu-dubbed.json',destination),...(await readdir(catalogFolder)).filter(x=>x.endsWith('.json')).map(x=>new URL(x,catalogFolder))];
+  const route=`catalog/${options.catalogType||'movie'}/${options.catalogId||'telugu-dubbed'}`;
+  const catalogFolder=new URL(route+'/',destination);
+  const files=[new URL(route+'.json',destination),...(await readdir(catalogFolder)).filter(x=>x.endsWith('.json')).map(x=>new URL(x,catalogFolder))];
   for(const file of files){
     const page=JSON.parse(await readFile(file,'utf8'));
     for(const movie of page.metas){movie.poster=urls.get(movie.id);movie.posterShape='poster';}
     await writeFile(file,JSON.stringify(page));
   }
   const stats={total:data.movies.length,actualPosters:data.movies.length-failures.length,fallbackPosters:failures.length,fallbackIds:failures,checkedAt:new Date().toISOString()};
-  const statusFile=new URL('status.json',destination),status=JSON.parse(await readFile(statusFile,'utf8'));
+  const statusFile=new URL(options.statusPath||'status.json',destination),status=JSON.parse(await readFile(statusFile,'utf8'));
   await writeFile(statusFile,JSON.stringify({...status,posters:stats}));
   return stats;
 }
@@ -65,3 +66,4 @@ if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   const data=JSON.parse(await readFile(new URL('./data/catalog.json',import.meta.url),'utf8'));
   console.log(JSON.stringify(await cachePosters(data,new URL('./public/',import.meta.url),base),null,2));
 }
+

@@ -111,16 +111,16 @@ def parse_trendraja(html):
     return {'sourceUrl':url,'sourceRowCount':len(rows),'rows':rows}
 
 class SacnilkCards(HTMLParser):
-    def __init__(self):
+    def __init__(self, series=False):
         super().__init__(convert_charrefs=True)
-        self.rows=[];self.card=None;self.pages={1}
+        self.rows=[];self.card=None;self.pages={1};self.series=series
     def handle_starttag(self,tag,attrs):
         attrs=dict(attrs)
         if tag=='a':
             href=attrs.get('href','')
             query=parse_qs(urlparse(href).query)
             if query.get('page',[''])[0].isdigit():self.pages.add(int(query['page'][0]))
-            if href.startswith('/movie/') and 'data-languages' in attrs and 'data-platforms' in attrs:
+            if href.startswith('/series/' if self.series else '/movie/') and 'data-languages' in attrs and 'data-platforms' in attrs:
                 self.card={'href':href,'languages':attrs['data-languages'],'platforms':attrs['data-platforms'],
                            'parts':[],'title':''}
         if self.card is not None:
@@ -135,16 +135,25 @@ class SacnilkCards(HTMLParser):
             text=' '.join(' '.join(c['parts']).split())
             year=re.search(r'_(20\d{2})$',unquote(urlparse(c['href']).path))
             self.rows.append({'title':c['title'],'ottReleaseDate':parse_date(text),'dateText':text[:100],
-                              'platforms':platform_names(c['platforms']),'genreText':'Movie',
+                              'platforms':platform_names(c['platforms']),'genreText':'Series' if self.series else 'Movie',
                               'languageText':c['languages'],'audioEvidence':'Publisher OTT availability-language field',
                               'castText':'','movieYearHint':year[1] if year else None,
                               'sourceUrl':urljoin('https://www.sacnilk.com/',c['href']),
                               'sourceRank':len(self.rows),'tentative':'coming soon' in text.lower()})
+            if self.series:
+                season=re.search(r'/season/(\d+)',c['href'])
+                self.rows[-1]['season']=int(season[1]) if season else None
 
 def parse_sacnilk(html):
     parser=SacnilkCards();parser.feed(html)
     if not parser.rows:raise ValueError('Sacnilk OTT movie cards not found')
     return {'sourceUrl':'https://www.sacnilk.com/ott-movie-releases',
+            'sourceRowCount':len(parser.rows),'totalPages':max(parser.pages),'rows':parser.rows}
+
+def parse_sacnilk_series(html):
+    parser=SacnilkCards(series=True);parser.feed(html)
+    if not parser.rows:raise ValueError('Sacnilk series cards not found')
+    return {'sourceUrl':'https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries',
             'sourceRowCount':len(parser.rows),'totalPages':max(parser.pages),'rows':parser.rows}
 
 def parse_source(html):
@@ -166,7 +175,8 @@ def parse_source(html):
 if __name__=='__main__':
     try:
         kind=sys.argv[1] if len(sys.argv)>1 else 'ottreleasemovies'
-        parser={'ottreleasemovies':parse_source,'trendraja':parse_trendraja,'sacnilk':parse_sacnilk}[kind]
+        parser={'ottreleasemovies':parse_source,'trendraja':parse_trendraja,'sacnilk':parse_sacnilk,'sacnilk-series':parse_sacnilk_series}[kind]
         print(json.dumps(parser(sys.stdin.read()),ensure_ascii=False))
     except Exception as error:
         print(str(error),file=sys.stderr); sys.exit(1)
+

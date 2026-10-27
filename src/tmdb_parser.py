@@ -5,6 +5,9 @@ import sys
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 
+MEDIA_PATH = 'tv' if len(sys.argv)>1 and sys.argv[1]=='tv' else 'movie'
+SCHEMA_TYPE = 'TVSeries' if MEDIA_PATH=='tv' else 'Movie'
+
 
 class MovieFacts(HTMLParser):
     def __init__(self):
@@ -52,7 +55,7 @@ class MovieFacts(HTMLParser):
         def key(url):
             try:
                 parsed=urlparse(url)
-                match=re.fullmatch(r'/movie/(\d+)(?:-[^/]+)?/?',parsed.path)
+                match=re.fullmatch(r'/'+MEDIA_PATH+r'/(\d+)(?:-[^/]+)?/?',parsed.path)
                 return match[1] if parsed.scheme=='https' and parsed.netloc=='www.themoviedb.org' and match else None
             except (ValueError,TypeError):return None
         def objects(value):
@@ -62,7 +65,7 @@ class MovieFacts(HTMLParser):
                 yield value
                 if isinstance(value.get('@graph'),list):yield from objects(value['@graph'])
         movies=[v for d in self.documents for v in objects(d)
-                if v.get('@type')=='Movie' and key(v.get('url')) is not None
+                if v.get('@type')==SCHEMA_TYPE and key(v.get('url')) is not None
                 and key(v.get('url'))==key(self.canonical)]
         if len(movies)!=1:return None
         movie=movies[0];countries=movie.get('countryOfOrigin',[])
@@ -80,3 +83,4 @@ if __name__ == "__main__":
         sys.exit("Public movie page is missing unambiguous original-language facts")
     print(json.dumps({"title": page.title, "canonical": page.canonical,
                       "originalLanguage": page.languages[0],"structured":page.structured_facts()}))
+
