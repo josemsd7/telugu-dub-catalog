@@ -144,3 +144,12 @@ test('91mobiles can update series while other publishers are unavailable',async(
  const result=await discoverSeriesSources({ninetyOneDetailCache:{[url]:facts}},{now:Date.parse(facts.checkedAt),fetcher:async u=>u.includes('list_ajax.php')?Response.json({response:card,total_records:1}):new Response('',{status:503})});
  assert.equal(result.rows.length,1);assert.equal(result.statuses.find(x=>x.key==='91mobiles').state,'ok');assert.equal(result.statuses.find(x=>x.key==='svteluguott').state,'disabled');
 });
+test('91mobiles uses the canonical public page when pagination is unavailable and reports partial coverage',async()=>{
+ const {discover91,NINETYONE}=await import('./src/ninetyone.mjs');
+ const url='https://www.91mobiles.com/entertainment/example-series-12',checkedAt='2026-10-27T00:00:00Z';
+ const card='<div class="pro_item card_box"><h3><a href="/entertainment/example-series-12">Example</a></h3><div class="imdb_box"><p>Hindi | 10 Oct 2026</p></div></div><div id="list-loadmore-btn" data-total-records="48" data-num-records="24"></div>';
+ const facts={title:'Example',sourceUrl:url,originalLanguageText:'Hindi',castText:'Actor One',teluguPlatforms:['Netflix'],listedAudioLanguages:['Hindi','Telugu'],episodes:[{season:1,episode:1,releasedDate:'2026-10-10'}],checkedAt};
+ const requests=[];
+ const result=await discover91({ninetyOneDetailCache:{[url]:facts}},{now:Date.parse(checkedAt),fetcher:async u=>{requests.push(u);return u===NINETYONE.url?new Response(card):new Response('',{status:403});}});
+ assert.equal(result.fresh,true);assert.equal(result.status.state,'partial');assert.equal(result.status.publicHtmlFallback,true);assert.equal(result.status.pagesFetched,1);assert.equal(result.status.pagesAvailable,2);assert.equal(result.rows.length,1);assert.equal(requests.length,2);assert.match(result.status.errors[0],/Pagination unavailable/);
+});

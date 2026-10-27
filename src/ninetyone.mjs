@@ -41,12 +41,18 @@ export async function discover91(previous={},options={}){
   async function request(url){const r=await fetcher(url,{headers:{Accept:'text/html,application/json;q=0.9','User-Agent':'TeluguDubCatalog/0.6 (factual metadata; https://github.com/josemsd7/telugu-dub-catalog)'},signal:AbortSignal.timeout(30000)});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r;}
   try{
     // This is the public endpoint used by the page's own Sort and Load more UI.
-    const first=await (await request(list91Url(0))).json();
-    if(typeof first.response!=='string')throw new Error('Invalid public list response');
-    const p=parse91(first.response),total=Number(first.total_records||p.totalRecords),pages=Math.ceil(total/p.pageSize);
+    let first,p,htmlFallback=false;
+    try{first=await (await request(list91Url(0))).json();if(typeof first.response!=='string')throw new Error('Invalid public list response');p=parse91(first.response);}
+    catch(error){
+      // The canonical public HTML remains useful if only the page's pagination
+      // endpoint is unavailable. Report partial coverage and preserve older rows.
+      try{p=parse91(await (await request(NINETYONE.url)).text());first={total_records:p.totalRecords};htmlFallback=true;errors.push(`Pagination unavailable (${error.message}); using the public first page and last successful rows.`);}
+      catch(pageError){throw new Error(`Pagination: ${error.message}; public page: ${pageError.message}`);}
+    }
+    const total=Number(first.total_records||p.totalRecords),pages=Math.ceil(total/p.pageSize);
     if(!Number.isInteger(pages)||pages<1||pages>MAX_PAGES)throw new Error(`Pagination outside verified limit (${MAX_PAGES} pages)`);
     const cards=[...p.rows];let pagesFetched=1;
-    const additional=await parallelMap(Array.from({length:pages-1},(_,i)=>i+1),2,async n=>{
+    const additional=await parallelMap(Array.from({length:htmlFallback?0:pages-1},(_,i)=>i+1),2,async n=>{
       try{const r=await (await request(list91Url(n))).json();const list=parse91(r.response);pagesFetched++;return list.rows;}
       catch(e){errors.push(`List page ${n+1}: ${e.message}`);return [];}
     });cards.push(...additional.flat());
@@ -64,7 +70,7 @@ export async function discover91(previous={},options={}){
     })).flat().filter(recent);
     if(!rows.length)throw new Error('No recent verified list rows');
     const kept=errors.length&&old?[...new Map([...old.rows.filter(recent),...rows].map(x=>[[x.sourceUrl,x.season||'',x.ottReleaseDate].join('|'),x])).values()]:rows;
-    return {fresh:true,rows:kept,snapshot:{checkedAt,rows:kept},cache,status:{...NINETYONE,state:errors.length?'partial':'ok',checkedAt,rowCount:kept.length,pagesFetched,pagesAvailable:pages,listCardCount:unique.length,teluguAudioRowCount:kept.filter(x=>/to Telugu|^Telugu$/.test(x.languageText)).length,errors}};
+    return {fresh:true,rows:kept,snapshot:{checkedAt,rows:kept},cache,status:{...NINETYONE,state:errors.length?'partial':'ok',checkedAt,rowCount:kept.length,pagesFetched,pagesAvailable:pages,listCardCount:unique.length,publicHtmlFallback:htmlFallback,retainedSnapshotCheckedAt:errors.length&&old?old.checkedAt:null,teluguAudioRowCount:kept.filter(x=>/to Telugu|^Telugu$/.test(x.languageText)).length,errors}};
   }catch(e){
     const rows=(old?.rows||[]).filter(recent);
     return {fresh:false,rows,snapshot:rows.length?{...old,rows}:null,cache,status:{...NINETYONE,state:rows.length?'cached':'unavailable',checkedAt:old?.checkedAt||null,rowCount:rows.length,error:e.message}};
