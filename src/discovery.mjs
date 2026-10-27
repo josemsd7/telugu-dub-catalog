@@ -64,10 +64,10 @@ export async function discoverSources(previous={},options={}) {
       options.onProgress?.(`${source.name}: ${cached?.rows.length?'using last successful snapshot':'unavailable'} (${String(error.message||error)})`);
     }
   }
-  if(!fresh)throw new Error('All release sources failed; preserving last successful catalog');
+  if(!fresh&&!options.allowCachedOnly)throw new Error('All release sources failed; preserving last successful catalog');
   const rows=Object.values(snapshots).flatMap(s=>s.rows);
   if(!rows.length)throw new Error('Release sources returned no recent rows; preserving last successful catalog');
   if(!options.sources)statuses.push({key:'svteluguott',name:'SV Telugu OTT',url:'https://svteluguott.in/ott-movies',state:'disabled',rowCount:0,error:'Automated access returned HTTP 403 during validation on 2026-10-23; no verified live adapter is enabled.'});
-  return {rows,sourceRowCount:rows.length,snapshots:compactSnapshots(snapshots),statuses,windowStart,historyDays:365};
+  return {freshSourceCount:fresh,rows,sourceRowCount:rows.length,snapshots:compactSnapshots(snapshots),statuses,windowStart,historyDays:365};
 }
 

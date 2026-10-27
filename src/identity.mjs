@@ -1,4 +1,4 @@
-export const VERSION = '0.5.1';
+export const VERSION = '0.6.0';
 export const LANGUAGES = {Q5885:'Tamil',Q1568:'Hindi',Q36236:'Malayalam',Q33673:'Kannada',Q5146:'Punjabi',Q9610:'Bengali',Q1571:'Marathi',Q33810:'Odia',Q1860:'English'};
 const UA = 'TeluguDubCatalog/0.1 (personal non-commercial catalog metadata; no playback requests)';
 const MAX_AGE = 6 * 60 * 60 * 1000;

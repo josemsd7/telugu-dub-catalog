@@ -3,8 +3,17 @@ import {fileURLToPath} from 'node:url';
 import {VERSION,LANGUAGES,normalize,parallelMap,wikiQuery,wikiRecords,releaseDate,newestFirst} from './identity.mjs';
 import {parseSource,titleScore,assessFilm,languageHint} from './source-refresh.mjs';
 import {discoverSources,SOURCES} from './discovery.mjs';
+import {discover91,NINETYONE} from './ninetyone.mjs';
+import {newestSeriesFirst} from './series-order.mjs';
 
-export const SERIES_SOURCES=[...SOURCES.slice(0,2),{key:'sacnilk-series',name:'Sacnilk',url:'https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries'}];
+export const SERIES_SOURCES=[...SOURCES.slice(0,2),{key:'sacnilk-series',name:'Sacnilk',url:'https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries'},NINETYONE];
+export async function discoverSeriesSources(previous,options){
+  const results=await Promise.allSettled([discoverSources(previous,{...options,parsePage:parseSource,sources:SERIES_SOURCES.slice(0,3),maxPages:150,allowCachedOnly:true}),discover91(previous,options)]);
+  const old=results[0].status==='fulfilled'?results[0].value:{rows:[],snapshots:{},statuses:SERIES_SOURCES.slice(0,3).map(x=>({...x,state:'unavailable',error:String(results[0].reason?.message||results[0].reason)}))};
+  const extra=results[1].status==='fulfilled'?results[1].value:{fresh:false,rows:[],cache:previous.ninetyOneDetailCache,status:{...NINETYONE,state:'unavailable',error:String(results[1].reason?.message||results[1].reason)}};
+  if(!old.freshSourceCount&&!extra.fresh)throw new Error('All series release sources failed; preserving the last successful catalog');
+  return {...old,rows:[...old.rows,...extra.rows],snapshots:{...old.snapshots,...(extra.snapshot?{[NINETYONE.key]:extra.snapshot}:{})},ninetyOneDetailCache:extra.cache,statuses:[...old.statuses,extra.status,{key:'svteluguott',name:'SV Telugu OTT',url:'https://svteluguott.in/ott-movies',state:'disabled',rowCount:0,error:'The exact public page returned HTTP 403 in the browser on 2026-10-27, before the Series tab could load. No verified live adapter is enabled.'}],windowStart:new Date((options.now||Date.now())-365*86400000).toISOString().slice(0,10)};
+}
 const WEEK=7*86400000,SIX_HOURS=6*3600000;
 const fresh=(x,now,ttl=WEEK)=>x?.checkedAt&&now-Date.parse(x.checkedAt)<ttl;
 const year=x=>String(x||'').match(/\d{4}/)?.[0]||null;
@@ -41,7 +50,9 @@ async function get(url,fetcher){
   if(!r.ok)throw new Error(`Metadata HTTP ${r.status}`);return r;
 }
 function compactMeta(m,checkedAt,today){
-  return {id:m.id,name:m.name,type:m.type,countries:String(m.country||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean),year:year(m.releaseInfo||m.year||m.released),releaseInfo:m.releaseInfo||m.year,released:releaseDate(m.released),poster:m.poster,tmdbId:m.moviedb_id?String(m.moviedb_id):null,cast:(m.cast||[]).slice(0,30),directors:[],seasons:[...new Set((m.videos||[]).filter(v=>v.season>0&&v.released&&v.released.slice(0,10)<=today).map(v=>v.season))],checkedAt};
+  const seasonLatestDates={};
+  for(const v of m.videos||[]){const day=v.released?.slice(0,10);if(v.season>0&&day&&Number.isFinite(Date.parse(v.released))&&Date.parse(v.released)<=Date.parse(checkedAt)&&(!seasonLatestDates[v.season]||day>seasonLatestDates[v.season]))seasonLatestDates[v.season]=day;}
+  return {id:m.id,name:m.name,type:m.type,countries:String(m.country||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean),year:year(m.releaseInfo||m.year||m.released),releaseInfo:m.releaseInfo||m.year,released:releaseDate(m.released),poster:m.poster,tmdbId:m.moviedb_id?String(m.moviedb_id):null,cast:(m.cast||[]).slice(0,30),directors:[],schemaVersion:2,seasonLatestDates,seasons:[...new Set((m.videos||[]).filter(v=>v.season>0&&v.released&&v.released.slice(0,10)<=today).map(v=>v.season))],checkedAt};
 }
 export function assessSeries(row,match,identity,facts){
   const result=assessFilm(sourceTitle(row),match,identity,facts);
@@ -63,17 +74,19 @@ export function mergeSeriesListings(items){
     const groups=new Map();
     for(const listing of show.releaseListings){const key=listing.season||'unspecified';const dates=groups.get(key)||[];dates.push(listing.ottReleaseDate);groups.set(key,dates);}
     show.ottReleaseDate=[...groups.values()].map(x=>x.sort()[0]).sort().at(-1);
+    show.latestAiredDate=[show.ottReleaseDate,...show.releaseListings.map(x=>x.lastAiredDate).filter(Boolean)].sort().at(-1);
     show.reportedSeasons=[...new Set(show.releaseListings.map(x=>x.season).filter(Boolean))].sort((a,b)=>a-b);
     show.releaseDateConflicts=[...groups].filter(([,dates])=>new Set(dates).size>1).map(([season,dates])=>({season,dates:[...new Set(dates)].sort()}));
     const listingText=show.reportedSeasons.length?` Reported seasons: ${show.reportedSeasons.join(', ')}.`:'';
-    show.description=`Latest source-listed Telugu series/season release: ${show.ottReleaseDate}. Platforms: ${show.platforms.join(', ')||'not specified'}. Original language: ${show.genres.join(', ')}.${listingText} Telugu audio is reported by ${show.sourceNames.join(', ')} for the listed releases; this does not confirm every season or episode. Audio tracks and regional availability are not independently inspected.`;
+    show.description=`Latest aired episode or Telugu release: ${show.latestAiredDate}. Latest listed Telugu season release: ${show.ottReleaseDate}. Platforms: ${show.platforms.join(', ')||'not specified'}. Original language: ${show.genres.join(', ')}.${listingText} Telugu audio is reported by ${show.sourceNames.join(', ')} for the listed releases; this does not confirm every season or episode. Audio tracks and regional availability are not independently inspected.`;
     show.links=[...new Map(show.releaseListings.map(x=>[x.sourceUrl,{name:x.sourceName,category:'Telugu release source',url:x.sourceUrl}])).values(),...(show.originalLanguageSourceUrl?[{name:'Original language',category:'Source',url:show.originalLanguageSourceUrl}]:[])];
+    for(const url of new Set(show.releaseListings.map(x=>x.airDateSource).filter(Boolean)))if(!show.links.some(x=>x.url===url))show.links.push({name:'Episode air date',category:'Air date source',url});
   }
-  return newestFirst([...byId.values()]);
+  return newestSeriesFirst([...byId.values()]);
 }
 export async function refreshSeries(previous={},options={}){
   const fetcher=options.fetcher||fetch,now=options.now||Date.now(),checkedAt=new Date(now).toISOString(),today=checkedAt.slice(0,10),progress=options.onProgress||(()=>{});
-  const source=options.source||await discoverSources(previous,{fetcher,now,parsePage:parseSource,sources:SERIES_SOURCES,maxPages:150,onProgress:progress});
+  const source=options.source||await discoverSeriesSources(previous,{fetcher,now,onProgress:progress});
   const counts={},audit=[],warnings=[];
   const reject=(row,reason)=>{counts[reason]=(counts[reason]||0)+1;audit.push({title:row.title,ottReleaseDate:row.ottReleaseDate,season:seriesSeason(row),sourceName:row.sourceName,sourceUrl:row.sourceUrl,reason});};
   const eligible=[];
@@ -100,7 +113,7 @@ export async function refreshSeries(previous={},options={}){
     })());return searchPromises.get(key);
   }
   async function meta(hit){
-    if(fresh(metas[hit.id],now,SIX_HOURS))return metas[hit.id];
+    if(metas[hit.id]?.schemaVersion===2&&fresh(metas[hit.id],now,SIX_HOURS))return metas[hit.id];
     if(!metaPromises.has(hit.id))metaPromises.set(hit.id,(async()=>{
       const d=await (await get(`https://v3-cinemeta.strem.io/meta/series/${hit.id}.json`,fetcher)).json();
       if(d.meta?.id!==hit.id||d.meta.type!=='series')throw new Error('Invalid series identity');
@@ -149,10 +162,17 @@ export async function refreshSeries(previous={},options={}){
   for(const match of resolved){
     const {row,meta:m}=match,a=assessSeries(row,match,identities[m.id],originals[m.tmdbId]);
     if(a.reason){reject(row,a.reason.replace('film','series'));continue;}
-    accepted.push({id:m.id,type:'series',name:m.name,releaseInfo:m.releaseInfo||m.year,released:m.released||undefined,genres:a.originalLanguages.map(x=>LANGUAGES[x]||'Other'),poster:m.poster,posterCandidates:[...new Set([m.poster,`https://images.metahub.space/poster/small/${m.id}/img`,originals[m.tmdbId]?.poster].filter(Boolean))],originalLanguageIds:a.originalLanguages,originalLanguageEvidence:a.originalEvidence,originalLanguageSourceUrl:a.originalSourceUrl,countryEvidence:a.countryEvidence,countrySourceUrl:a.countrySourceUrl,releaseListings:[{sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,season:seriesSeason(row)}]});
+    const season=seriesSeason(row);
+    // Air dates are factual schedule data, separate from the source proving
+    // Telugu audio. Borrow them only for the same matched show and listed season.
+    const airing=season?source.rows.filter(x=>x.sourceKey==='91mobiles'&&x.season===season&&x.lastAiredDate&&x.lastAiredDate<=today&&titleScore(cleanSeriesTitle(x.title),m.name)>0&&(!x.castText||m.cast.some(name=>normalize(name).length>=4&&normalize(x.castText).includes(normalize(name))))).sort((a,b)=>b.lastAiredDate.localeCompare(a.lastAiredDate))[0]:null;
+    const lastAiredDate=[row.ottReleaseDate,row.lastAiredDate,airing?.lastAiredDate,season?m.seasonLatestDates?.[season]:null].filter(x=>x&&x<=today).sort().at(-1);
+    const originalEvidence=a.originalEvidence==='Publisher explicit dubbing-direction label'&&row.publisherLanguageEvidence?row.publisherLanguageEvidence:a.originalEvidence;
+    const originalSourceUrl=a.originalSourceUrl||(originalEvidence===row.publisherLanguageEvidence?row.sourceUrl:undefined);
+    accepted.push({id:m.id,type:'series',name:m.name,releaseInfo:m.releaseInfo||m.year,released:m.released||undefined,genres:a.originalLanguages.map(x=>LANGUAGES[x]||'Other'),poster:m.poster,posterCandidates:[...new Set([m.poster,`https://images.metahub.space/poster/small/${m.id}/img`,originals[m.tmdbId]?.poster].filter(Boolean))],originalLanguageIds:a.originalLanguages,originalLanguageEvidence:originalEvidence,originalLanguageSourceUrl:originalSourceUrl,countryEvidence:a.countryEvidence,countrySourceUrl:a.countrySourceUrl,releaseListings:[{sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,season,lastAiredDate,latestEpisode:airing?.lastAiredDate===lastAiredDate?airing.latestEpisode:row.latestEpisode||null,airDateSource:airing?.lastAiredDate===lastAiredDate?airing.sourceUrl:row.lastAiredDate&&row.lastAiredDate===lastAiredDate?row.sourceUrl:season&&m.seasonLatestDates?.[season]===lastAiredDate?`https://v3-cinemeta.strem.io/meta/series/${m.id}.json`:row.sourceUrl,audioEvidence:row.audioEvidence||'Publisher Telugu release listing'}]});
   }
   const series=mergeSeriesListings(accepted);
   if(!series.length)throw new Error('No verified series; preserving the last successful series catalog');
   progress(`Verified ${series.length} series and TV shows`);
-  return {version:VERSION,checkedAt,series,sourceName:'OTTReleaseMovies + Trendraja + Sacnilk series',sourceUrls:SERIES_SOURCES.map(x=>x.url),sourceRowCount:source.rows.length,candidateCount:eligible.length,sourceStatus:source.statuses||[],sourceSnapshots:source.snapshots||{},coverageWindowStart:source.windowStart,coverageHistoryDays:365,acceptedListingCount:accepted.length,duplicatesMerged:accepted.length-series.length,counts,audit,refreshWarnings:warnings,searchCache:searches,metadataCache:metas,identities,originalLanguageCache:originals,limits:['Indian series and TV shows reported with Telugu audio; Telugu originals are excluded, matching the movie catalog scope.','Rolling 365 days of source-listed releases; coverage depends on publishers and verified series identities.','Reported audio applies to listed releases/seasons, not necessarily every episode. Regional availability and actual audio tracks are not inspected.','One entry per IMDb series ID; latest listed season date is used for ordering, taking the earliest report per season.','Unmatched titles, unconfirmed seasons, uncertain original languages and conflicting identities remain excluded. An English-original field on a public TMDB page needs publisher or Wikidata corroboration for Indian series; English defaults conflicted with Telugu originals during validation.','If all sources fail or no series are verified, the previous series data is preserved.']};
+  return {version:VERSION,checkedAt,series,sourceName:'OTTReleaseMovies + Trendraja + Sacnilk + 91mobiles series',sourceUrls:SERIES_SOURCES.map(x=>x.url),sourceRowCount:source.rows.length,candidateCount:eligible.length,sourceStatus:source.statuses||[],sourceSnapshots:source.snapshots||{},ninetyOneDetailCache:source.ninetyOneDetailCache||previous.ninetyOneDetailCache||{},datePolicy:'latest_aired_confirmed_season_then_telugu_release',coverageWindowStart:source.windowStart,coverageHistoryDays:365,acceptedListingCount:accepted.length,duplicatesMerged:accepted.length-series.length,counts,audit,refreshWarnings:warnings,searchCache:searches,metadataCache:metas,identities,originalLanguageCache:originals,limits:['Indian series and TV shows reported with Telugu audio; Telugu originals are excluded, matching the movie catalog scope.','Rolling 365 days of source-listed releases; coverage depends on publishers and verified series identities.','Reported audio applies to listed releases/seasons, not necessarily every episode. Regional availability and actual audio tracks are not inspected.','One entry per IMDb series ID. Order is the latest past episode date within a source-confirmed Telugu season, or the Telugu release date if later. Unspecified seasons use only the listed Telugu release date. Future episodes and unlisted seasons cannot promote a show.','Unmatched titles, unconfirmed seasons, uncertain original languages and conflicting identities remain excluded. An English-original field on a public TMDB page needs publisher or Wikidata corroboration for Indian series; English defaults conflicted with Telugu originals during validation.','91mobiles requires an explicit [Telugu] streaming-offer label; presence on its Telugu category page alone is insufficient. Original-language and India-origin checks remain required. SV Telugu OTT returned HTTP 403 in this browser during validation and contributes no rows.','If all sources fail or no series are verified, the previous series data is preserved.']};
 }
