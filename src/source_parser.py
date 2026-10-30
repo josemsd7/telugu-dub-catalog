@@ -23,8 +23,12 @@ class Tables(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.tables=[]; self.depth=0; self.table=None; self.row=None; self.cell=None
+        self.div_stack=[];self.ott_depth=0;self.ott_tables=[]
     def handle_starttag(self, tag, attrs):
         attrs=dict(attrs)
+        if tag=='div':
+            self.div_stack.append(self.ott_depth)
+            if 't123-show-OTT' in attrs.get('class','').split():self.ott_depth+=1
         if tag=='table':
             self.depth+=1
             if self.depth==1: self.table=[]
@@ -43,8 +47,12 @@ class Tables(HTMLParser):
                 self.row.append(self.cell); self.cell=None
             if tag=='tr' and self.row is not None: self.table.append(self.row); self.row=None
         if tag=='table' and self.depth:
-            if self.depth==1: self.tables.append(self.table); self.table=None
+            if self.depth==1:
+                self.tables.append(self.table)
+                if self.ott_depth:self.ott_tables.append(self.table)
+                self.table=None
             self.depth-=1
+        if tag=='div' and self.div_stack:self.ott_depth=self.div_stack.pop()
 
 def parse_date(text):
     value=re.sub(r'(?<=\d)(st|nd|rd|th)\b', '', text, flags=re.I)
@@ -108,6 +116,51 @@ def parse_trendraja(html):
                      'sourceUrl':url,'sourceRank':len(rows),
                      'tentative':bool(re.search(r'\b(soon|tba|expected|tentative|rumou?r)\b',raw_date,re.I))})
     if not rows:raise ValueError('Trendraja release table empty')
+    return {'sourceUrl':url,'sourceRowCount':len(rows),'rows':rows}
+
+def parse_123telugu(html,reference_date=None):
+    url='https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html'
+    parser=Tables();parser.feed(html)
+    if len(parser.ott_tables)!=1:raise ValueError('123telugu OTT tab table not found unambiguously')
+    today=date.fromisoformat(reference_date) if reference_date else date.today()
+    def release_day(text):
+        explicit=parse_date(text)
+        if explicit:return explicit,False
+        # Month/day rows describe the current release window. Resolve December /
+        # January across the year boundary; retain that inference as provenance.
+        candidates=[]
+        for year in (today.year-1,today.year,today.year+1):
+            value=parse_date(text+', '+str(year))
+            if value:candidates.append(date.fromisoformat(value))
+        if not candidates:return None,False
+        value=min(candidates,key=lambda d:abs((d-today).days))
+        return (value.isoformat(),True) if abs((value-today).days)<=183 else (None,False)
+    rows=[]
+    for cells in parser.ott_tables[0]:
+        if len(cells)!=2:continue
+        text,raw_date=cells[0]['text'],cells[1]['text']
+        match=re.match(r'^(.*?)\s*\(([^)]+)\)\s*(.*?)$',text)
+        if not match:continue
+        title,label,platform=match.groups()
+        language=re.search(r'\b(Telugu|Tamil|Hindi|Malayalam|Kannada|English|Marathi|Bengali|Punjabi|Odia)\b',label,re.I)
+        language=language[1].title() if language else ''
+        dubbed=bool(re.search(r'\bTelugu\s+Dub(?:bed)?\b',label,re.I))
+        language_text=(language+' to Telugu') if dubbed and language and language!='Telugu' else 'Direct Telugu' if language=='Telugu' and not dubbed else language
+        kind='Series' if re.search(r'\b(series|show|season)\b',label,re.I) else 'Movie'
+        names=platform_names(platform)
+        day,inferred=release_day(raw_date)
+        provider=next((x for x in cells[0]['links'] if urlparse(x).hostname in ('www.netflix.com','netflix.com')),None)
+        if provider:
+            parsed=urlparse(provider)
+            netflix_id=re.fullmatch(r'/(?:[a-z]{2}(?:-[a-z]{2})?/)?title/(\d+)',parsed.path,re.I)
+            netflix_id=netflix_id[1] if netflix_id else parse_qs(parsed.query).get('jbv',[None])[0]
+            provider='https://www.netflix.com/in/title/'+netflix_id if netflix_id and netflix_id.isdigit() else None
+        rows.append({'title':title.strip(),'ottReleaseDate':day,'dateText':raw_date,
+                     'dateYearInferred':inferred,'platforms':names,'genreText':kind,
+                     'languageText':language_text,'audioEvidence':'123telugu explicit Telugu Dub label' if dubbed else '123telugu language label',
+                     'castText':'','providerUrl':provider,'sourceUrl':url,'sourceRank':len(rows),
+                     'tentative':bool(re.search(r'\b(tba|soon|expected|tentative)\b',raw_date,re.I))})
+    if not rows:raise ValueError('123telugu OTT tab has no recognized release rows')
     return {'sourceUrl':url,'sourceRowCount':len(rows),'rows':rows}
 
 class SacnilkCards(HTMLParser):
@@ -175,8 +228,11 @@ def parse_source(html):
 if __name__=='__main__':
     try:
         kind=sys.argv[1] if len(sys.argv)>1 else 'ottreleasemovies'
-        parser={'ottreleasemovies':parse_source,'trendraja':parse_trendraja,'sacnilk':parse_sacnilk,'sacnilk-series':parse_sacnilk_series}[kind]
-        print(json.dumps(parser(sys.stdin.read()),ensure_ascii=False))
+        parser={'ottreleasemovies':parse_source,'trendraja':parse_trendraja,'sacnilk':parse_sacnilk,'sacnilk-series':parse_sacnilk_series,'123telugu':parse_123telugu}[kind]
+        html=sys.stdin.read()
+        result=parser(html,sys.argv[2] if len(sys.argv)>2 else None) if kind=='123telugu' else parser(html)
+        print(json.dumps(result,ensure_ascii=False))
     except Exception as error:
         print(str(error),file=sys.stderr); sys.exit(1)
+
 

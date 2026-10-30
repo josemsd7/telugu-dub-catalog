@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {VERSION,LANGUAGES,normalize,parallelMap,wikiQuery,wikiRecords,releaseDate,newestFirst} from './identity.mjs';
 import {discoverSources,SOURCE_URL,SOURCE_NAME,SOURCES} from './discovery.mjs';
 import {confirmedRelease,confirmedIdentity} from './confirmed-films.mjs';
+import {enrichProviderRows} from './provider-facts.mjs';
 
 export {SOURCE_URL};
 const SIX_HOURS=6*3600000,WEEK=7*86400000;
@@ -12,8 +13,8 @@ const year=value=>String(value||'').match(/\d{4}/)?.[0]||null;
 const stamp=(value,now,ttl)=>value?.checkedAt&&now-Date.parse(value.checkedAt)<ttl;
 const safePoster=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:undefined;}catch{return undefined;}};
 
-export function parseSource(html,kind='ottreleasemovies') {
-  const result=spawnSync('python3',[fileURLToPath(new URL('./source_parser.py',import.meta.url)),kind],{input:html,encoding:'utf8',maxBuffer:4*1024*1024});
+export function parseSource(html,kind='ottreleasemovies',referenceDate=new Date().toISOString().slice(0,10)) {
+  const result=spawnSync('python3',[fileURLToPath(new URL('./source_parser.py',import.meta.url)),kind,referenceDate],{input:html,encoding:'utf8',maxBuffer:4*1024*1024});
   if(result.error||result.status!==0)throw new Error(`Release parser failed: ${String(result.error?.message||result.stderr).slice(0,180)}`);
   const data=JSON.parse(result.stdout);
   if(!Array.isArray(data.rows)||!data.rows.length)throw new Error('Release source returned no rows');
@@ -122,11 +123,13 @@ export async function refreshFromOtt(previous={},options={}) {
   if(!Array.isArray(source.rows)||!source.rows.length)throw new Error('Release source empty; preserving last successful catalog');
   const counts={},audit=[],warnings=[];
   const record=(row,reason)=>{counts[reason]=(counts[reason]||0)+1;audit.push({title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,reason});};
-  const eligible=[];
+  let eligible=[];
   for(const row of source.rows){const reason=sourceReason(row,today);if(reason)record(row,reason);else eligible.push(row);}
   eligible.sort((a,b)=>b.ottReleaseDate.localeCompare(a.ottReleaseDate)||a.sourceRank-b.sourceRank);
   options.onProgress?.(`Source: ${source.rows.length} release rows; ${eligible.length} candidates after source filters`);
   const searchCache={...(previous.sourceSearchCache||{})},metaCache={...(previous.sourceMetadataCache||{})},identities={...(previous.identities||{})},originalCache={...(previous.sourceOriginalLanguageCache||{})};
+  const providerEvidence=await enrichProviderRows(eligible,previous.sourceProviderFactsCache,{fetcher,now,titleScore});
+  eligible=providerEvidence.rows;warnings.push(...providerEvidence.warnings);
   const failedMetadata=new Map(),failedSearches=new Map();
   if(!options.retryFailedLookups&&stamp(previous,now,3600000))for(const warning of previous.refreshWarnings||[]){
     const clean=warning.replace(/Cached lookup failure: /g,''),index=clean.lastIndexOf(': ');
@@ -233,7 +236,7 @@ export async function refreshFromOtt(previous={},options={}) {
     acceptedListingCount++;
     const languages=assessment.originalLanguages.map(x=>LANGUAGES[x]||'Other');
     const posters=[...new Set([meta.poster,`https://images.metahub.space/poster/small/${meta.id}/img`,originalCache[meta.tmdbId]?.poster].filter(Boolean))];
-    const listing={sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms};
+    const listing={sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,providerUrl:row.providerUrl,dateYearInferred:row.dateYearInferred,castEvidenceUrl:row.castEvidenceUrl};
     const old=byId.get(meta.id);
     if(old){
       old.platforms=[...new Set([...old.platforms,...row.platforms])];
@@ -256,13 +259,14 @@ export async function refreshFromOtt(previous={},options={}) {
     movie.description=`Earliest Telugu OTT date reported by these sources: ${movie.ottReleaseDate}${movie.platforms.length?' — '+movie.platforms.join(', '):''}. Original language: ${movie.genres.join(', ')}. Telugu audio is reported by ${movie.sourceNames.join(', ')}; audio tracks and regional availability are not independently checked.${movie.releaseDateConflicts.length?' Some sources report different dates; see the release source links.':''}`;
     const sources=[...new Map(movie.releaseListings.map(x=>[x.sourceUrl,x])).values()];
     movie.links=[...sources.map(x=>({name:x.sourceName,category:'OTT release source',url:x.sourceUrl})),...(movie.originalLanguageSourceUrl?[{name:'Original language',category:'Source',url:movie.originalLanguageSourceUrl}]:[])];
+    for(const url of new Set(movie.releaseListings.map(x=>x.castEvidenceUrl).filter(Boolean)))if(!movie.links.some(x=>x.url===url))movie.links.push({name:'Platform title details',category:'Identity source',url});
     if(movie.countrySourceUrl&&!movie.links.some(x=>x.url===movie.countrySourceUrl))movie.links.push({name:'Country of origin',category:'Source',url:movie.countrySourceUrl});
   }
   const movies=newestFirst([...byId.values()]);
   if(!movies.length)throw new Error('No verified films from release source; preserving the last successful catalog');
   const keep=new Set(ids),searchKeys=new Set(eligible.map(x=>titleKey(x.title)));
   return {version:VERSION,checkedAt,movies,candidateCount:eligible.length,sourceRowCount:source.rows.length,sourceName:SOURCE_NAME,sourceUrl:SOURCE_URL,sourceUrls:SOURCES.map(x=>x.url),sortOrder:'source_ott_release_date_desc',datePolicy:'earliest_reported_telugu_ott_date',acceptedListingCount,duplicatesMerged:acceptedListingCount-movies.length,releaseDateConflictCount:movies.filter(x=>x.releaseDateConflicts.length).length,sourceStatus:(source.statuses||[]).map(x=>({...x,movieCount:movies.filter(m=>m.sourceNames.includes(x.name)).length})),sourceSnapshots:source.snapshots||previous.sourceSnapshots||{},coverageWindowStart:source.windowStart||null,coverageHistoryDays:source.historyDays||null,counts,refreshWarnings:warnings,audit,
-    sourceSearchCache:Object.fromEntries(Object.entries(searchCache).filter(([k])=>searchKeys.has(k))),sourceMetadataCache:Object.fromEntries(Object.entries(metaCache).filter(([id])=>keep.has(id))),identities:Object.fromEntries(Object.entries(identities).filter(([id])=>keep.has(id))),sourceOriginalLanguageCache:Object.fromEntries(Object.entries(originalCache).filter(([id])=>needFacts.has(id))),
-    limits:['OTT dates and Telugu audio are reported by OTTReleaseMovies, Trendraja and Sacnilk; actual audio tracks and regional subscriptions are not inspected.','Discovery covers a rolling 365 days of release listings. Older archive rows are not part of this latest-releases catalog. Future and tentative dates, series, Telugu originals and non-Indian films are excluded.','Duplicate film IDs are merged. Sorting uses the earliest reported Telugu OTT date across accepted listings; conflicting platform dates remain visible in coverage data.','Original language uses Wikidata or the matching TMDB public movie page; an explicit publisher dubbing-direction label is the final fallback. Unknown or conflicting originals are excluded.','Film identities use Cinemeta title, cast where listed, country and year checks. Unmatched or ambiguous titles remain excluded and are reported in coverage data.','A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.','SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub.']};
+    sourceProviderFactsCache:providerEvidence.cache,sourceSearchCache:Object.fromEntries(Object.entries(searchCache).filter(([k])=>searchKeys.has(k))),sourceMetadataCache:Object.fromEntries(Object.entries(metaCache).filter(([id])=>keep.has(id))),identities:Object.fromEntries(Object.entries(identities).filter(([id])=>keep.has(id))),sourceOriginalLanguageCache:Object.fromEntries(Object.entries(originalCache).filter(([id])=>needFacts.has(id))),
+    limits:['OTT dates and Telugu audio are reported by OTTReleaseMovies, Trendraja, Sacnilk and 123telugu; actual audio tracks and regional subscriptions are not inspected.','Discovery covers a rolling 365 days of release listings. Older archive rows are not part of this latest-releases catalog. Future and tentative dates, series, Telugu originals and non-Indian films are excluded.','Duplicate film IDs are merged. Sorting uses the earliest reported Telugu OTT date across accepted listings; conflicting platform dates remain visible in coverage data.','Original language uses Wikidata or the matching TMDB public movie page; an explicit publisher dubbing-direction label is the final fallback. Unknown or conflicting originals are excluded.','Film identities use Cinemeta title, cast where listed, country and year checks. Unmatched or ambiguous titles remain excluded and are reported in coverage data.','A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.','SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub.']};
 }
 

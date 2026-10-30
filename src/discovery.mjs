@@ -1,11 +1,12 @@
 import {parallelMap,normalize} from './identity.mjs';
 
 export const SOURCE_URL='https://ottreleasemovies.com/';
-export const SOURCE_NAME='OTTReleaseMovies + Trendraja + Sacnilk';
+export const SOURCE_NAME='OTTReleaseMovies + Trendraja + Sacnilk + 123telugu';
 export const SOURCES=[
   {key:'ottreleasemovies',name:'OTTReleaseMovies',url:SOURCE_URL},
   {key:'trendraja',name:'Trendraja',url:'https://trendraja.in/telugu-movie-ott-release-dates-2021/'},
   {key:'sacnilk',name:'Sacnilk',url:'https://www.sacnilk.com/ott-movie-releases'},
+  {key:'123telugu',name:'123telugu',url:'https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html'},
 ];
 const UA='TeluguDubCatalog/0.4 (personal factual release metadata; https://github.com/josemsd7/telugu-dub-catalog)';
 const DAY=86400000,MAX_PAGES=50;
@@ -21,7 +22,7 @@ export async function discoverSources(previous={},options={}) {
   async function page(source,url=source.url){
     const response=await fetcher(url,{headers:{Accept:'text/html','User-Agent':UA},signal:AbortSignal.timeout(30000)});
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
-    return parsePage(await response.text(),source.key);
+    return parsePage(await response.text(),source.key,checkedAt.slice(0,10));
   }
   // Sources run sequentially. Sacnilk's public pagination has concurrency two.
   for(const source of options.sources||SOURCES){
@@ -52,6 +53,12 @@ export async function discoverSources(previous={},options={}) {
       }
       const rawRows=rows.length;
       rows=unique(recent(rows));
+      // This page rotates its short OTT window. Retain already observed releases
+      // while replacing a title/platform row when its published schedule changes.
+      if(source.key==='123telugu'&&old){
+        const key=r=>normalize(r.title)+'|'+(r.platforms||[]).slice().sort().join('|');
+        rows=[...new Map([...recent(old.rows),...rows].map(r=>[key(r),r])).values()];
+      }
       if(errors.length&&old)rows=unique([...recent(old.rows),...rows]);
       rows=rows.map((r,i)=>({...r,sourceKey:source.key,sourceName:source.name,sourceRank:i}));
       snapshots[source.key]={checkedAt,rows,rawRowCount:rawRows};fresh++;
@@ -70,4 +77,5 @@ export async function discoverSources(previous={},options={}) {
   if(!options.sources)statuses.push({key:'svteluguott',name:'SV Telugu OTT',url:'https://svteluguott.in/ott-movies',state:'disabled',rowCount:0,error:'Automated access returned HTTP 403 during validation on 2026-10-23; no verified live adapter is enabled.'});
   return {freshSourceCount:fresh,rows,sourceRowCount:rows.length,snapshots:compactSnapshots(snapshots),statuses,windowStart,historyDays:365};
 }
+
 

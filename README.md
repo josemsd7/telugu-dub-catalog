@@ -1,6 +1,6 @@
 # Telugu Dubs — Latest OTT
 
-A free catalog-only Stremio add-on for Indian films reported as available with Telugu audio, excluding Telugu originals. It combines release listings from **OTTReleaseMovies, Trendraja and Sacnilk** and refreshes automatically every six hours. A second, separate catalog now covers Indian series and TV shows listed with Telugu audio, with the same exclusion of Telugu originals.
+A free catalog-only Stremio add-on for Indian films reported as available with Telugu audio, excluding Telugu originals. It combines release listings from **OTTReleaseMovies, Trendraja, Sacnilk and 123telugu** and refreshes automatically every six hours. A second, separate catalog now covers Indian series and TV shows listed with Telugu audio, with the same exclusion of Telugu originals.
 
 ## Install
 
@@ -16,7 +16,7 @@ No playback, provider login, debrid service, paid API, API key or additional acc
 
 The same manifest exposes **Available in Telugu** (`movie/telugu-dubbed`) and **Available in Telugu — Series & TV** (`series/telugu-dubbed-series`). Reinstall the add-on from the existing install page if Stremio has cached the old one-catalog manifest. Movies never enter the series response, and series never enter the movie response.
 
-The series catalog combines OTTReleaseMovies and Trendraja series rows, [Sacnilk’s public series/season cards](https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries), and [91mobiles’ Telugu show list](https://www.91mobiles.com/entertainment/new-telugu-web-series). It uses Cinemeta series identities, Wikidata TV IDs and public TMDB **TV** pages; films with matching names or numeric TMDB movie IDs are not used as shows. Source-listed season numbers must exist in released Cinemeta episodes. Telugu originals and non-Indian series are excluded, matching the existing film scope. Unknown or conflicting matches stay excluded. Available cast/host facts are shared across matching publisher rows to distinguish regional adaptations. For Indian series, an English-original field from TMDB alone needs publisher or Wikidata corroboration; validation found English defaults on Telugu originals.
+The series catalog combines OTTReleaseMovies, Trendraja and 123telugu series rows, [Sacnilk’s public series/season cards](https://www.sacnilk.com/entertainmenttopbar/Recent_WebSeries), and [91mobiles’ Telugu show list](https://www.91mobiles.com/entertainment/new-telugu-web-series). It uses Cinemeta series identities, Wikidata TV IDs and public TMDB **TV** pages; films with matching names or numeric TMDB movie IDs are not used as shows. Source-listed season numbers must exist in released Cinemeta episodes. Telugu originals and non-Indian series are excluded, matching the existing film scope. Unknown or conflicting matches stay excluded. Available cast/host facts are shared across matching publisher rows to distinguish regional adaptations. For Indian series, an English-original field from TMDB alone needs publisher or Wikidata corroboration; validation found English defaults on Telugu originals.
 
 There is one entry per IMDb series ID. Ordering uses the most recent past episode in a source-confirmed Telugu season, or the listed Telugu release date if later. Episode dates come from Cinemeta or the matching 91mobiles detail page; future episodes and unlisted seasons cannot promote a show. If a source does not identify a season, only its Telugu release date is used. Dates from another language’s newer season are not borrowed. The original listed Telugu season-release date stays visible in coverage data. Source evidence is season-specific: a listed Telugu season does not confirm all seasons or all episodes. Live channels are outside this catalog. Static hosting supports browsing and pagination, not dynamic search.
 
@@ -36,6 +36,7 @@ The latest-releases catalog covers a **rolling 365 days of source-listed OTT dat
 - **OTTReleaseMovies:** its factual release table, including dubbing direction, dates, platforms and cast.
 - **Trendraja:** its Telugu OTT release table, including dates, platforms and Film/Series categories. The table's Telugu context is an audio-availability report, not evidence that a film was originally Telugu.
 - **Sacnilk:** public OTT movie cards, their platform and availability-language fields, and public pagination. Pages run at concurrency two and stop after the recent window. Movie-page year hints help avoid matching a different-year remake. A safety limit of 50 pages prevents runaway pagination.
+- **123telugu:** only the **OTT Releases** tab of its theatrical/OTT page. Explicit labels such as `Tamil Film - Telugu Dub` establish dubbing direction; Telugu originals and entries without a Telugu audio label are excluded. Linked Netflix pages supply title-bound Movie/TVSeries cast facts to disambiguate namesakes. Month/day dates infer the nearest year within 183 days of fetching, including December/January rollover; that inference is retained in coverage data. The page has a short rotating release window, so previously observed rows are retained within the 365-day window and refreshed schedules replace matching title/platform rows. This does not backfill releases absent from the page.
 - **SV Telugu OTT:** the supplied URL returned HTTP 403 to automated requests during validation on October 23, 2026. No unverified live adapter or cached search-engine results are used for it.
 
 Only factual metadata is extracted. Article prose and publisher platform artwork are not republished.
@@ -96,6 +97,7 @@ GitHub Pages on the free plan requires a public repository. Publishing exposes t
 - https://ottreleasemovies.com/
 - https://trendraja.in/telugu-movie-ott-release-dates-2021/
 - https://www.sacnilk.com/ott-movie-releases
+- https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html
 - https://v3-cinemeta.strem.io/
 - https://www.wikidata.org/
 - https://www.themoviedb.org/
