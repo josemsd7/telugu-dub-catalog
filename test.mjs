@@ -243,3 +243,38 @@ test('a total poster source outage stops publication',async()=>{
   } finally {await rm(directory,{recursive:true,force:true});}
 });
 
+
+
+test('verified Netflix release selects Dhoomakethu 2026 over its 1968 namesake and survives refresh',async()=>{
+  const recent={id:'tt38990864',name:'Dhoomakethu',type:'movie',year:'2026',countries:['india'],cast:['Nikhila Vimal'],directors:[],tmdbId:'1590718',checkedAt:stamp};
+  const older={...recent,id:'tt0290567',year:'1968',cast:['Rajkumar']};
+  const source={rows:[{...row,title:'Dhoomakethu (Telugu)',ottReleaseDate:'2026-10-23',languageText:'Telugu',castText:'',sourceName:'Trendraja',sourceUrl:'https://trendraja.in/telugu-movie-ott-release-dates-2021/'}]};
+  const blank={items:[],names:[],countries:[],languages:[],tmdbIds:[],years:[],checkedAt:stamp};
+  const previous={identities:{[recent.id]:blank},sourceMetadataCache:{[recent.id]:recent,[older.id]:older},sourceSearchCache:{dhoomakethu:{hits:[older,recent],checkedAt:stamp}}};
+  const fetcher=async()=>{throw Error('Unexpected request: cached identities and official evidence suffice');};
+  const result=await refresh(previous,{source,fetcher,now:Date.parse(stamp)});
+  assert.deepEqual(result.movies.map(m=>m.id),[recent.id]);
+  assert.deepEqual(result.movies[0].originalLanguageIds,['Q36236']);
+  assert.equal(result.movies[0].originalLanguageSourceUrl,'https://www.netflix.com/in/title/83206696');
+  assert.equal(result.movies[0].ottReleaseDate,'2026-10-23');
+  assert.deepEqual(result.refreshWarnings,[]);
+  const next=await refresh(result,{source,fetcher,now:Date.parse(stamp)+1000});
+  assert.equal(catalog(next).metas[0].id,recent.id);
+
+  const withoutAudio=await refresh({...previous,identities:{...previous.identities,[meta.id]:identity},sourceMetadataCache:{...previous.sourceMetadataCache,[meta.id]:{...meta,checkedAt:stamp}},sourceSearchCache:{...previous.sourceSearchCache,mandaadi:{hits:[meta],checkedAt:stamp}}},{source:{rows:[{...source.rows[0],languageText:'Malayalam'},row]},fetcher,now:Date.parse(stamp)});
+  assert.equal(withoutAudio.movies.some(m=>m.id===recent.id),false);
+  assert.equal(withoutAudio.counts.telugu_audio_not_listed,1);
+});
+
+test('verified corrections cannot override contradictory language, year or cast evidence',async()=>{
+  const officialRow={...row,title:'Dhoomakethu (Telugu)',ottReleaseDate:'2026-10-23',languageText:'Telugu',castText:''};
+  const knownMeta={...meta,id:'tt38990864',name:'Dhoomakethu',year:'2026',cast:['Nikhila Vimal']};
+  const knownMatch={...match,row:officialRow,meta:knownMeta};
+  const missing={...identity,items:[],countries:[],tmdbIds:[],languages:[]};
+  assert.equal(assessFilm(officialRow,knownMatch,missing).reason,null);
+  assert.equal(assessFilm(officialRow,knownMatch,{...missing,languages:['Q8097']}).reason,'original_telugu');
+  assert.equal(assessFilm(officialRow,knownMatch,{...missing,languages:['Q5885']}).reason,'original_language_conflict');
+  for(const wrong of [{year:'1968'},{cast:['Different Actor']},{id:'tt0290567'}]){
+    assert.equal(assessFilm(officialRow,{...knownMatch,meta:{...knownMeta,...wrong}},missing).reason,'original_language_unconfirmed');
+  }
+});

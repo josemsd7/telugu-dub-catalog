@@ -47,6 +47,7 @@ Coverage is not exhaustive. These websites can omit films, report wrong dates or
 1. Exclude missing, tentative, future and subtitle-only dates, series, reality shows and explicit Telugu originals.
 2. Match movie titles or supplied aliases to Cinemeta. Check Indian origin using Cinemeta, Wikidata or the matching TMDB movie page’s structured countryOfOrigin facts, country consistency, cast when the publisher lists it, movie-year hints when available, and identity ambiguity.
 3. Use Wikidata original-language metadata, or the **Original Language** field of the matching public TMDB page. Check its numeric movie ID and title. An explicit publisher label such as `Tamil to Telugu` is the final fallback. Unknown or conflicting originals stay excluded. Any confirmed Telugu original-language value causes exclusion, including bilingual Telugu originals.
+   A documented platform-page correction can resolve a known namesake collision. It must match the exact listed OTT date, platform, IMDb ID, film year, title and corroborating cast. Dhoomakethu (2026) is confirmed by Netflix's public title page as Malayalam-original with Telugu audio; the 1968 namesake cannot block that verified release. Conflicting original-language facts still cause exclusion.
 4. Merge accepted listings by IMDb movie ID. Combine platforms and source links, keeping one catalog entry per film.
 5. Sort newest first using the **earliest reported Telugu OTT date across accepted listings**. This avoids promoting an old film solely because a second source or platform lists a later date. This is a reported date, not independently proven first-ever availability. Differing dates for the same platform remain visible in the coverage report.
 6. Download real poster images under 100 kB and serve them from this add-on's own HTTPS host. Try alternate images before using a clearly identified placeholder. A total image-source outage stops deployment.
@@ -101,4 +102,5 @@ GitHub Pages on the free plan requires a public repository. Publishing exposes t
 - https://stremio.github.io/stremio-addon-sdk/api/requests/defineCatalogHandler.html
 
 The code is MIT licensed. Third-party metadata and artwork retain their respective ownership and terms. Source links are provided for factual release listings. This project does not claim endorsement by the publishers or streaming platforms.
+
 
