@@ -1,6 +1,7 @@
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {normalize,parallelMap} from './identity.mjs';
+import {indiaDate} from './release-time.mjs';
 export const NINETYONE={key:'91mobiles',name:'91mobiles',url:'https://www.91mobiles.com/entertainment/new-telugu-web-series'};
 const SIX_HOURS=6*3600000,MAX_PAGES=20;
 const languages=['Telugu','Tamil','Hindi','Malayalam','Kannada','English','Marathi','Bengali','Punjabi','Odia'];
@@ -35,7 +36,7 @@ export function list91Url(start){
   return 'https://www.91mobiles.com/entertainment/web/list_ajax.php?'+new URLSearchParams({qp:'contentTypes:show~languages:65',sortOrder:'desc',sortBy:'ottReleaseDate',start:String(start),seoSlug:'/entertainment/new-telugu-web-series',pType:'new-telugu-web-series',dubbedVal:'notDubbed',type:start?'loadmore':'filter'});
 }
 export async function discover91(previous={},options={}){
-  const fetcher=options.fetcher||fetch,now=options.now||Date.now(),checkedAt=new Date(now).toISOString(),today=checkedAt.slice(0,10),windowStart=new Date(now-365*86400000).toISOString().slice(0,10);
+  const fetcher=options.fetcher||fetch,now=options.now||Date.now(),checkedAt=new Date(now).toISOString(),today=indiaDate(now),windowStart=indiaDate(now-365*86400000);
   const cache={...(previous.ninetyOneDetailCache||{})},old=previous.sourceSnapshots?.[NINETYONE.key],errors=[];
   const recent=x=>[x.ottReleaseDate,x.lastAiredDate].filter(Boolean).some(d=>d>=windowStart&&d<=today);
   async function request(url){const r=await fetcher(url,{headers:{Accept:'text/html,application/json;q=0.9','User-Agent':'TeluguDubCatalog/0.6 (factual metadata; https://github.com/josemsd7/telugu-dub-catalog)'},signal:AbortSignal.timeout(30000)});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r;}
@@ -76,3 +77,4 @@ export async function discover91(previous={},options={}){
     return {fresh:false,rows,snapshot:rows.length?{...old,rows}:null,cache,status:{...NINETYONE,state:rows.length?'cached':'unavailable',checkedAt:old?.checkedAt||null,rowCount:rows.length,error:e.message}};
   }
 }
+

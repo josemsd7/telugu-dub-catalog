@@ -1,4 +1,5 @@
 import {parallelMap,normalize} from './identity.mjs';
+import {indiaDate} from './release-time.mjs';
 
 export const SOURCE_URL='https://ottreleasemovies.com/';
 export const SOURCE_NAME='OTTReleaseMovies + Trendraja + Sacnilk + 123telugu';
@@ -16,13 +17,13 @@ export const compactSnapshots=snapshots=>Object.fromEntries(Object.entries(snaps
 
 export async function discoverSources(previous={},options={}) {
   const {parsePage}=options,fetcher=options.fetcher||fetch,now=options.now||Date.now();
-  const checkedAt=new Date(now).toISOString(),windowStart=new Date(now-365*DAY).toISOString().slice(0,10);
+  const checkedAt=new Date(now).toISOString(),windowStart=indiaDate(now-365*DAY);
   const recent=rows=>rows.filter(r=>!r.ottReleaseDate||r.ottReleaseDate>=windowStart);
   const snapshots={},statuses=[];let fresh=0;
   async function page(source,url=source.url){
     const response=await fetcher(url,{headers:{Accept:'text/html','User-Agent':UA},signal:AbortSignal.timeout(30000)});
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
-    return parsePage(await response.text(),source.key,checkedAt.slice(0,10));
+    return parsePage(await response.text(),source.key,indiaDate(now));
   }
   // Sources run sequentially. Sacnilk's public pagination has concurrency two.
   for(const source of options.sources||SOURCES){

@@ -1,3 +1,4 @@
+import {RELEASE_TIME_ZONE} from './release-time.mjs';
 import {VERSION,normalize,newestFirst} from './identity.mjs';
 import {seriesCatalog,seriesStatus,SERIES_ID} from './series-core.mjs';
 export {VERSION,LANGUAGES,normalize,jsonFetch,parallelMap,wikiQuery,wikiRecords,releaseDate,newestFirst} from './identity.mjs';
@@ -20,7 +21,7 @@ export function catalog(data,extra='') {
 
 export function status(data) {
   const platformCounts={};for(const movie of data.movies||[])for(const name of movie.platforms||[])platformCounts[name]=(platformCounts[name]||0)+1;
-  return {version:VERSION,sourceName:data.sourceName||null,sourceUrl:data.sourceUrl||null,sortOrder:data.sortOrder||null,datePolicy:data.datePolicy||null,coverageWindowStart:data.coverageWindowStart||null,coverageHistoryDays:data.coverageHistoryDays||null,sourceUrls:data.sourceUrls||[],sources:data.sourceStatus||[],acceptedListingCount:data.acceptedListingCount||0,duplicatesMerged:data.duplicatesMerged||0,releaseDateConflictCount:data.releaseDateConflictCount||0,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,sourceRowCount:data.sourceRowCount||0,candidateCount:data.candidateCount||0,platformCounts,exclusions:data.counts||{},limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};
+  return {version:VERSION,releaseTimeZone:data.releaseTimeZone||RELEASE_TIME_ZONE,sourceName:data.sourceName||null,sourceUrl:data.sourceUrl||null,sortOrder:data.sortOrder||null,datePolicy:data.datePolicy||null,coverageWindowStart:data.coverageWindowStart||null,coverageHistoryDays:data.coverageHistoryDays||null,sourceUrls:data.sourceUrls||[],sources:data.sourceStatus||[],acceptedListingCount:data.acceptedListingCount||0,duplicatesMerged:data.duplicatesMerged||0,releaseDateConflictCount:data.releaseDateConflictCount||0,verifiedMovieCount:data.movies?.length||0,checkedAt:data.checkedAt||null,stale:!data.checkedAt||Date.now()-Date.parse(data.checkedAt)>MAX_AGE,sourceRowCount:data.sourceRowCount||0,candidateCount:data.candidateCount||0,platformCounts,exclusions:data.counts||{},limits:data.limits||[],refreshWarnings:data.refreshWarnings||[],lastError:data.lastError||null};
 }
 
 export async function handle(request,env,store,context={}) {

@@ -78,7 +78,7 @@ test('static export provides two separate typed routes, pagination, and series c
 });
 test('series identities choose the Indian namesake and verified season before testing ambiguity',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt),r={...row,title:'Example Season 2'};
- const india={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:2,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
+ const india={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
  const foreign={...india,id:'tt99999',countries:['united states']};
  const previous={searchCache:{example:{hits:[{id:india.id,name:india.name},{id:foreign.id,name:foreign.name}],checkedAt}},metadataCache:{[india.id]:india,[foreign.id]:foreign},identities:{[india.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const result=await refreshSeries(previous,{now,source:{rows:[r]},fetcher:async()=>{throw new Error('Unexpected fetch');}});
@@ -95,7 +95,7 @@ test('a lone English-original public field cannot relabel an Indian regional ori
 });
 test('a name-only source card cannot override a conflicting host on another release source',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt);
- const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:2,year:'2020',releaseInfo:'2020-',cast:['Different Host'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
+ const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Different Host'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
  const previous={searchCache:{example:{hits:[{id:meta.id,name:meta.name}],checkedAt}},metadataCache:{[meta.id]:meta},identities:{[meta.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const source={rows:[{...row,castText:''},{...row,title:'Example Telugu',castText:'Actor One',languageText:'Telugu'}]};
  await assert.rejects(refreshSeries(previous,{now,source,fetcher:async()=>{throw new Error('Unexpected fetch');}}),/No verified series/);
@@ -120,7 +120,7 @@ test('91mobiles list parser reads actual cards and never treats the Telugu categ
 });
 test('latest aired ordering promotes only past episodes from a source-listed Telugu season',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt),r={...row,title:'Example Season 2'};
- const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:2,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2,3],seasonLatestDates:{1:'2026-10-26',2:'2026-10-25',3:'2026-12-01'},checkedAt};
+ const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2,3],seasonLatestDates:{1:'2026-10-26',2:'2026-10-25',3:'2026-12-01'},checkedAt};
  const previous={searchCache:{example:{hits:[{id:meta.id,name:meta.name}],checkedAt}},metadataCache:{[meta.id]:meta},identities:{[meta.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const options={now,source:{rows:[r]},fetcher:async()=>{throw new Error('Unexpected fetch');}};
  let result=await refreshSeries(previous,options);assert.equal(result.series[0].latestAiredDate,'2026-10-25');
@@ -153,3 +153,4 @@ test('91mobiles uses the canonical public page when pagination is unavailable an
  const result=await discover91({ninetyOneDetailCache:{[url]:facts}},{now:Date.parse(checkedAt),fetcher:async u=>{requests.push(u);return u===NINETYONE.url?new Response(card):new Response('',{status:403});}});
  assert.equal(result.fresh,true);assert.equal(result.status.state,'partial');assert.equal(result.status.publicHtmlFallback,true);assert.equal(result.status.pagesFetched,1);assert.equal(result.status.pagesAvailable,2);assert.equal(result.rows.length,1);assert.equal(requests.length,2);assert.match(result.status.errors[0],/Pagination unavailable/);
 });
+

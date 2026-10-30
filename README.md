@@ -55,7 +55,9 @@ Coverage is not exhaustive. These websites can omit films, report wrong dates or
 
 ## Automatic updates and failures
 
-GitHub Actions fetches sources every six hours and publishes static JSON and poster files through GitHub Pages. Scheduled jobs can be delayed. No manual list syncing is needed.
+Release-date eligibility, source date-year inference, coverage windows and dated episode labels use **Asia/Kolkata (India Standard Time)**. An October 30 release becomes eligible from October 30 at 00:00 IST, even while the server or viewer is still on October 29. Audit timestamps and cache ages remain absolute UTC instants.
+
+GitHub Actions fetches sources at **00:00, 06:00, 12:00 and 18:00 IST** and publishes static JSON and poster files through GitHub Pages. The UTC cron is `30 0,6,12,18 * * *`. Scheduled jobs and deployment can be delayed, and Stremio caches catalog responses. No manual list syncing is needed.
 
 Each source has its own factual snapshot. If one source fails, its last successful recent rows are retained while other sources update. A failed Sacnilk page retains prior rows while reporting partial pagination. If all release sources fail, or the verified catalog is empty, publication stops and the previous deployment remains available. A publisher layout change may require a parser update; this automates normal refreshes and does not promise zero future maintenance.
 

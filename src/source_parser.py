@@ -1,6 +1,7 @@
 """Extract factual release fields from the publisher's public release table."""
 from html.parser import HTMLParser
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse, urljoin, parse_qs, unquote
 import json
 import re
@@ -122,7 +123,7 @@ def parse_123telugu(html,reference_date=None):
     url='https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html'
     parser=Tables();parser.feed(html)
     if len(parser.ott_tables)!=1:raise ValueError('123telugu OTT tab table not found unambiguously')
-    today=date.fromisoformat(reference_date) if reference_date else date.today()
+    today=date.fromisoformat(reference_date) if reference_date else datetime.now(ZoneInfo('Asia/Kolkata')).date()
     def release_day(text):
         explicit=parse_date(text)
         if explicit:return explicit,False
