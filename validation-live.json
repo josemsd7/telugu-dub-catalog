@@ -1,10 +1,10 @@
 {
-  "version": "0.6.1",
+  "version": "0.6.2",
   "sourceName": "OTTReleaseMovies + Trendraja + Sacnilk",
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "datePolicy": "earliest_reported_telugu_ott_date",
-  "coverageWindowStart": "2025-10-29",
+  "coverageWindowStart": "2025-10-30",
   "coverageHistoryDays": 365,
   "sourceUrls": [
     "https://ottreleasemovies.com/",
@@ -17,7 +17,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-10-29T18:59:55.466Z",
+      "checkedAt": "2026-10-30T00:13:37.388Z",
       "rowCount": 251,
       "rawRowCount": 252,
       "pagesFetched": 1,
@@ -30,21 +30,21 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-10-29T18:59:55.466Z",
-      "rowCount": 245,
+      "checkedAt": "2026-10-30T00:13:37.388Z",
+      "rowCount": 243,
       "rawRowCount": 1147,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 44
+      "movieCount": 45
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-10-29T18:59:55.466Z",
-      "rowCount": 378,
+      "checkedAt": "2026-10-30T00:13:37.388Z",
+      "rowCount": 377,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
@@ -61,16 +61,16 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 173,
+  "acceptedListingCount": 174,
   "duplicatesMerged": 45,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 128,
-  "checkedAt": "2026-10-29T18:59:55.466Z",
+  "verifiedMovieCount": 129,
+  "checkedAt": "2026-10-30T00:13:37.388Z",
   "stale": false,
-  "sourceRowCount": 874,
-  "candidateCount": 546,
+  "sourceRowCount": 871,
+  "candidateCount": 549,
   "platformCounts": {
-    "Netflix": 36,
+    "Netflix": 37,
     "ZEE5": 15,
     "Prime Video": 29,
     "Manorama Max": 4,
@@ -84,19 +84,18 @@
     "Saina Play": 1
   },
   "exclusions": {
-    "upcoming": 6,
-    "not_a_movie": 71,
-    "telugu_audio_not_listed": 209,
+    "not_a_movie": 72,
+    "telugu_audio_not_listed": 208,
     "tentative_or_subtitles_only": 2,
-    "original_telugu": 201,
+    "original_telugu": 202,
     "non_indian_language": 15,
     "missing_ott_date": 4,
-    "no_matching_movie_id": 70,
+    "no_matching_movie_id": 71,
     "ambiguous_movie_match": 45,
+    "country_conflict": 3,
     "original_language_unconfirmed": 8,
-    "non_indian_film": 52,
+    "non_indian_film": 51,
     "indian_origin_unconfirmed": 5,
-    "country_conflict": 2,
     "cast_mismatch": 4,
     "title_mismatch": 5,
     "original_language_conflict": 1,
@@ -113,8 +112,21 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 97.478,
+  "durationSeconds": 56.425,
   "examples": [
+    {
+      "id": "tt38990864",
+      "name": "Dhoomakethu",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-23",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Malayalam"
+      ],
+      "originalLanguageEvidence": "Netflix public title page"
+    },
     {
       "id": "tt38915678",
       "name": "Dorothy",
@@ -255,19 +267,6 @@
       "ottReleaseDate": "2026-10-01",
       "platforms": [
         "Prime Video"
-      ],
-      "originalLanguage": [
-        "Tamil"
-      ],
-      "originalLanguageEvidence": "Wikidata original-language metadata"
-    },
-    {
-      "id": "tt37174734",
-      "name": "Angikaaram",
-      "year": "2026",
-      "ottReleaseDate": "2026-09-25",
-      "platforms": [
-        "Sun NXT"
       ],
       "originalLanguage": [
         "Tamil"
