@@ -1,6 +1,6 @@
 {
-  "version": "0.6.2",
-  "sourceName": "OTTReleaseMovies + Trendraja + Sacnilk",
+  "version": "0.7.0",
+  "sourceName": "OTTReleaseMovies + Trendraja + Sacnilk + 123telugu",
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "datePolicy": "earliest_reported_telugu_ott_date",
@@ -9,7 +9,8 @@
   "sourceUrls": [
     "https://ottreleasemovies.com/",
     "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
-    "https://www.sacnilk.com/ott-movie-releases"
+    "https://www.sacnilk.com/ott-movie-releases",
+    "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html"
   ],
   "sources": [
     {
@@ -17,7 +18,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-10-30T00:13:37.388Z",
+      "checkedAt": "2026-10-30T00:51:55.419Z",
       "rowCount": 251,
       "rawRowCount": 252,
       "pagesFetched": 1,
@@ -30,7 +31,7 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-10-30T00:13:37.388Z",
+      "checkedAt": "2026-10-30T00:51:55.419Z",
       "rowCount": 243,
       "rawRowCount": 1147,
       "pagesFetched": 1,
@@ -43,13 +44,26 @@
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-10-30T00:13:37.388Z",
+      "checkedAt": "2026-10-30T00:51:55.419Z",
       "rowCount": 377,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
       "errors": [],
       "movieCount": 66
+    },
+    {
+      "key": "123telugu",
+      "name": "123telugu",
+      "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
+      "state": "ok",
+      "checkedAt": "2026-10-30T00:51:55.419Z",
+      "rowCount": 13,
+      "rawRowCount": 13,
+      "pagesFetched": 1,
+      "pagesAvailable": 1,
+      "errors": [],
+      "movieCount": 2
     },
     {
       "key": "svteluguott",
@@ -61,16 +75,16 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 174,
+  "acceptedListingCount": 176,
   "duplicatesMerged": 45,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 129,
-  "checkedAt": "2026-10-30T00:13:37.388Z",
+  "verifiedMovieCount": 131,
+  "checkedAt": "2026-10-30T00:51:55.419Z",
   "stale": false,
-  "sourceRowCount": 871,
-  "candidateCount": 549,
+  "sourceRowCount": 884,
+  "candidateCount": 551,
   "platformCounts": {
-    "Netflix": 37,
+    "Netflix": 39,
     "ZEE5": 15,
     "Prime Video": 29,
     "Manorama Max": 4,
@@ -84,12 +98,13 @@
     "Saina Play": 1
   },
   "exclusions": {
-    "not_a_movie": 72,
-    "telugu_audio_not_listed": 208,
+    "not_a_movie": 74,
+    "telugu_audio_not_listed": 209,
     "tentative_or_subtitles_only": 2,
-    "original_telugu": 202,
+    "original_telugu": 206,
     "non_indian_language": 15,
     "missing_ott_date": 4,
+    "upcoming": 4,
     "no_matching_movie_id": 71,
     "ambiguous_movie_match": 45,
     "country_conflict": 3,
@@ -102,7 +117,7 @@
     "identity_conflict": 1
   },
   "limits": [
-    "OTT dates and Telugu audio are reported by OTTReleaseMovies, Trendraja and Sacnilk; actual audio tracks and regional subscriptions are not inspected.",
+    "OTT dates and Telugu audio are reported by OTTReleaseMovies, Trendraja, Sacnilk and 123telugu; actual audio tracks and regional subscriptions are not inspected.",
     "Discovery covers a rolling 365 days of release listings. Older archive rows are not part of this latest-releases catalog. Future and tentative dates, series, Telugu originals and non-Indian films are excluded.",
     "Duplicate film IDs are merged. Sorting uses the earliest reported Telugu OTT date across accepted listings; conflicting platform dates remain visible in coverage data.",
     "Original language uses Wikidata or the matching TMDB public movie page; an explicit publisher dubbing-direction label is the final fallback. Unknown or conflicting originals are excluded.",
@@ -112,8 +127,34 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 56.425,
+  "durationSeconds": 40.169,
   "examples": [
+    {
+      "id": "tt39239754",
+      "name": "Sigma",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-30",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
+    {
+      "id": "tt44090278",
+      "name": "Baththa",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-29",
+      "platforms": [
+        "Netflix"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+    },
     {
       "id": "tt38990864",
       "name": "Dhoomakethu",
@@ -244,32 +285,6 @@
       ],
       "originalLanguage": [
         "Malayalam"
-      ],
-      "originalLanguageEvidence": "Wikidata original-language metadata"
-    },
-    {
-      "id": "tt36931126",
-      "name": "Immortal",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-02",
-      "platforms": [
-        "Prime Video"
-      ],
-      "originalLanguage": [
-        "Tamil"
-      ],
-      "originalLanguageEvidence": "TMDB public original-language field"
-    },
-    {
-      "id": "tt28541577",
-      "name": "Sardar 2",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-01",
-      "platforms": [
-        "Prime Video"
-      ],
-      "originalLanguage": [
-        "Tamil"
       ],
       "originalLanguageEvidence": "Wikidata original-language metadata"
     }
