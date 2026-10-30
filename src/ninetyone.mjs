@@ -22,8 +22,8 @@ export function rowsFrom91(card,facts,today){
   const seasons=titleSeason?[titleSeason]:[...new Set(dated.map(x=>x.season))];
   return (seasons.length?seasons:[null]).map(season=>{
     const episodes=dated.filter(x=>x.season===season),dates=episodes.map(x=>x.releasedDate).sort();
-    // The first listed episode identifies the season start. Later episodes move
-    // the show up without changing or pretending to re-release its first season.
+    // Episode dates remain factual season metadata. Catalog order uses the
+    // original first-season premiere, independently of this listed season.
     return {...card,season,ottReleaseDate:dates[0]||card.ottReleaseDate,lastAiredDate:dates.at(-1)||null,
       latestEpisode:episodes.sort((a,b)=>b.releasedDate.localeCompare(a.releasedDate)||b.episode-a.episode)[0]||null,
       platforms:facts.teluguPlatforms,languageText,castText:facts.castText||card.castText,genreText:'Series',

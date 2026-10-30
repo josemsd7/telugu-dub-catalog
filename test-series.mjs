@@ -78,7 +78,7 @@ test('static export provides two separate typed routes, pagination, and series c
 });
 test('series identities choose the Indian namesake and verified season before testing ambiguity',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt),r={...row,title:'Example Season 2'};
- const india={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
+ const india={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:4,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
  const foreign={...india,id:'tt99999',countries:['united states']};
  const previous={searchCache:{example:{hits:[{id:india.id,name:india.name},{id:foreign.id,name:foreign.name}],checkedAt}},metadataCache:{[india.id]:india,[foreign.id]:foreign},identities:{[india.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const result=await refreshSeries(previous,{now,source:{rows:[r]},fetcher:async()=>{throw new Error('Unexpected fetch');}});
@@ -95,7 +95,7 @@ test('a lone English-original public field cannot relabel an Indian regional ori
 });
 test('a name-only source card cannot override a conflicting host on another release source',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt);
- const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Different Host'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
+ const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:4,year:'2020',releaseInfo:'2020-',cast:['Different Host'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
  const previous={searchCache:{example:{hits:[{id:meta.id,name:meta.name}],checkedAt}},metadataCache:{[meta.id]:meta},identities:{[meta.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const source={rows:[{...row,castText:''},{...row,title:'Example Telugu',castText:'Actor One',languageText:'Telugu'}]};
  await assert.rejects(refreshSeries(previous,{now,source,fetcher:async()=>{throw new Error('Unexpected fetch');}}),/No verified series/);
@@ -118,9 +118,9 @@ test('91mobiles list parser reads actual cards and never treats the Telugu categ
  const html='<div class="pro_item card_box"><h3><a href="/entertainment/example-season-2-series-12">Example : Season 2</a></h3><div class="imdb_box"><p>Hindi | 10 Oct 2026</p></div><div class="movi_det"><label>Top Cast</label><p>Actor One</p></div></div><div id="list-loadmore-btn" data-total-records="48" data-num-records="24"></div>';
  const p=parse91(html);assert.equal(p.totalRecords,48);assert.equal(p.rows[0].originalLanguageText,'Hindi');assert.equal(p.rows[0].ottReleaseDate,'2026-10-10');assert.equal(p.rows[0].languageText,undefined);assert.equal(p.rows[0].castText,'Actor One');
 });
-test('latest aired ordering promotes only past episodes from a source-listed Telugu season',async()=>{
+test('episode facts stay season-specific while sorting uses first-season premieres',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt),r={...row,title:'Example Season 2'};
- const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:3,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2,3],seasonLatestDates:{1:'2026-10-26',2:'2026-10-25',3:'2026-12-01'},checkedAt};
+ const meta={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:4,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2,3],seasonLatestDates:{1:'2026-10-26',2:'2026-10-25',3:'2026-12-01'},checkedAt};
  const previous={searchCache:{example:{hits:[{id:meta.id,name:meta.name}],checkedAt}},metadataCache:{[meta.id]:meta},identities:{[meta.id]:{items:['Q12345'],languages:['Q1568'],countries:['Q668'],tmdbIds:['12'],checkedAt}}};
  const options={now,source:{rows:[r]},fetcher:async()=>{throw new Error('Unexpected fetch');}};
  let result=await refreshSeries(previous,options);assert.equal(result.series[0].latestAiredDate,'2026-10-25');
@@ -128,7 +128,7 @@ test('latest aired ordering promotes only past episodes from a source-listed Tel
  result=await refreshSeries(previous,{...options,source:{rows:[r,schedule]}});assert.equal(result.series[0].latestAiredDate,'2026-10-26');assert.equal(result.series[0].releaseListings.length,1);assert.notEqual(result.series[0].releaseListings[0].sourceName,'91mobiles');assert.equal(result.series[0].releaseListings[0].airDateSource,schedule.sourceUrl);
  result=await refreshSeries(previous,{...options,source:{rows:[{...r,title:'Example',genreText:'Series'}]}});assert.equal(result.series[0].latestAiredDate,'2026-10-10');
  result=await refreshSeries(previous,{...options,source:{rows:[{...r,title:'Example Season 3',lastAiredDate:'2026-12-01'}]}});assert.equal(result.series[0].latestAiredDate,'2026-10-10');
- const ordered=seriesCatalog({series:[{...result.series[0],id:'tt33333',name:'New release',ottReleaseDate:'2026-10-24',latestAiredDate:'2026-10-24'},{...result.series[0],id:'tt44444',name:'Recent episode',ottReleaseDate:'2026-01-01',latestAiredDate:'2026-10-26'}]});assert.equal(ordered.metas[0].name,'Recent episode');
+ const ordered=seriesCatalog({series:[{...result.series[0],id:'tt33333',name:'New release',firstSeasonReleaseDate:'2026-10-24',ottReleaseDate:'2026-10-24',latestAiredDate:'2026-10-24'},{...result.series[0],id:'tt44444',name:'Recent episode',firstSeasonReleaseDate:'2021-01-01',ottReleaseDate:'2026-01-01',latestAiredDate:'2026-10-26'}]});assert.equal(ordered.metas[0].name,'New release');
 });
 test('a failed 91mobiles request retains its factual snapshot and reports cached status',async()=>{
  const {discover91}=await import('./src/ninetyone.mjs');
@@ -154,3 +154,30 @@ test('91mobiles uses the canonical public page when pagination is unavailable an
  assert.equal(result.fresh,true);assert.equal(result.status.state,'partial');assert.equal(result.status.publicHtmlFallback,true);assert.equal(result.status.pagesFetched,1);assert.equal(result.status.pagesAvailable,2);assert.equal(result.rows.length,1);assert.equal(requests.length,2);assert.match(result.status.errors[0],/Pagination unavailable/);
 });
 
+
+test('first-season premieres keep older shows below new series despite new seasons or episodes',()=>{
+ const fresh={...show,id:'tt33333',name:'Fresh series',firstSeasonReleaseDate:'2026-10-15',firstSeasonReleaseYear:'2026',releaseListings:[{...listing('2026-10-15',1),lastAiredDate:'2026-10-22'}]};
+ const old={...show,id:'tt44444',name:'Long-running series',firstSeasonReleaseDate:'2021-01-29',firstSeasonReleaseYear:'2021',releaseListings:[{...listing('2026-10-30',7),lastAiredDate:'2026-10-30'}]};
+ const merged=mergeSeriesListings([old,fresh]);
+ assert.deepEqual(merged.map(x=>x.name),['Fresh series','Long-running series']);
+ assert.equal(merged[1].ottReleaseDate,'2026-10-30');
+ assert.match(merged[1].description,/First season release: 2021-01-29/);
+ const updated=mergeSeriesListings([fresh,{...old,releaseListings:[...old.releaseListings,{...listing('2026-11-01',8),lastAiredDate:'2026-11-02'}]}]);
+ assert.equal(updated[0].name,'Fresh series');
+ const unknown={...show,id:'tt55555',name:'Unknown premiere',latestAiredDate:'2026-11-02',ottReleaseDate:'2026-11-01'};
+ const yearOnly={...show,id:'tt66666',name:'Year only',firstSeasonReleaseYear:'2024',releaseListings:[listing('2026-10-30',4)]};
+ const approximate=mergeSeriesListings([yearOnly])[0];
+ assert.equal(approximate.firstSeasonReleasePrecision,'year');assert.match(approximate.description,/2024 \(exact date unavailable\)/);
+ assert.deepEqual(seriesCatalog({series:[unknown,approximate,...updated]}).metas.map(x=>x.name),['Fresh series','Year only','Long-running series','Unknown premiere']);
+});
+
+test('refresh records season 1 episode 1 as the premiere when matching a later Telugu season',async()=>{
+ const checkedAt='2026-10-30T00:00:00Z',now=Date.parse(checkedAt),id='tt12345';
+ const previous={searchCache:{example:{hits:[{id,name:'Example'}],checkedAt}},identities:{[id]:{items:['Q123'],languages:['Q1568'],countries:['Q668'],tmdbIds:[],checkedAt}}};
+ const result=await refreshSeries(previous,{now,source:{rows:[row]},fetcher:async url=>{
+  assert.match(url,/\/meta\/series\/tt12345\.json$/);
+  return Response.json({meta:{id,name:'Example',type:'series',country:'India',cast:['Actor One'],releaseInfo:'2020–',released:'2020-02-01T00:00:00Z',videos:[{season:1,episode:1,released:'2020-01-02T00:00:00Z'},{season:2,episode:1,released:'2026-10-10T00:00:00Z'}]}});
+ }});
+ assert.equal(result.series[0].firstSeasonReleaseDate,'2020-01-02');assert.equal(result.series[0].firstSeasonReleaseYear,'2020');
+ assert.equal(result.series[0].ottReleaseDate,'2026-10-10');assert.equal(result.datePolicy,'first_season_release_desc');
+});

@@ -1,6 +1,6 @@
 import {RELEASE_TIME_ZONE} from './release-time.mjs';
 import {normalize,VERSION} from './identity.mjs';
-import {newestSeriesFirst} from './series-order.mjs';
+import {newestSeriesFirst,SERIES_DATE_POLICY} from './series-order.mjs';
 export const SERIES_ID='telugu-dubbed-series';
 export function seriesCatalog(data,extra=''){
   if(extra.length>2000)throw new Error('Invalid parameters');
@@ -11,6 +11,6 @@ export function seriesCatalog(data,extra=''){
 }
 export function seriesStatus(data){
   const platformCounts={};for(const x of data.series||[])for(const p of x.platforms||[])platformCounts[p]=(platformCounts[p]||0)+1;
-  return {version:VERSION,releaseTimeZone:data.releaseTimeZone||RELEASE_TIME_ZONE,checkedAt:data.checkedAt||null,verifiedSeriesCount:data.series?.length||0,sources:data.sourceStatus||[],sourceUrls:data.sourceUrls||[],coverageWindowStart:data.coverageWindowStart||null,datePolicy:'latest_aired_confirmed_season_then_telugu_release',candidateCount:data.candidateCount||0,acceptedListingCount:data.acceptedListingCount||0,duplicatesMerged:data.duplicatesMerged||0,platformCounts,exclusions:data.counts||{},refreshWarnings:data.refreshWarnings||[],limits:data.limits||[],lastError:data.lastError||null};
+  return {version:VERSION,releaseTimeZone:data.releaseTimeZone||RELEASE_TIME_ZONE,checkedAt:data.checkedAt||null,verifiedSeriesCount:data.series?.length||0,sources:data.sourceStatus||[],sourceUrls:data.sourceUrls||[],coverageWindowStart:data.coverageWindowStart||null,datePolicy:SERIES_DATE_POLICY,candidateCount:data.candidateCount||0,acceptedListingCount:data.acceptedListingCount||0,duplicatesMerged:data.duplicatesMerged||0,platformCounts,exclusions:data.counts||{},refreshWarnings:data.refreshWarnings||[],limits:data.limits||[],lastError:data.lastError||null};
 }
 
