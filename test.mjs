@@ -215,7 +215,7 @@ test('static export includes a factual coverage audit and only supported routes'
   try {
     await exportStatic(accepted,pathToFileURL(directory+'/'));
     const info=JSON.parse(await readFile(join(directory,'manifest.json'),'utf8'));
-    assert.deepEqual(info.resources,['catalog']);assert.deepEqual(info.catalogs[0].extra,[{name:'skip'}]);
+    assert.equal(info.resources[0],'catalog');assert.ok(info.resources.some(x=>x.name==='meta'));assert.deepEqual(info.catalogs[0].extra,[{name:'skip'}]);
     assert.equal(JSON.parse(await readFile(join(directory,'catalog/movie/telugu-dubbed.json'),'utf8')).metas.length,1);
     assert.equal(JSON.parse(await readFile(join(directory,'coverage.json'),'utf8')).accepted[0].ottReleaseDate,'2026-10-08');
     assert.equal(JSON.parse(await readFile(join(directory,'status.json'),'utf8')).staleAfter,'2026-10-23T16:00:00.000Z');

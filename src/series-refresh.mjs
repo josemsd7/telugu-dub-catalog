@@ -60,7 +60,21 @@ function compactMeta(m,checkedAt,today){
   return {id:m.id,name:m.name,type:m.type,countries:String(m.country||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean),year:year(m.releaseInfo||m.year||m.released),releaseInfo:m.releaseInfo||m.year,released:releaseDate(m.released),firstSeasonReleaseDate,firstSeasonReleaseDateSource:firstSeasonReleaseDate?`https://v3-cinemeta.strem.io/meta/series/${m.id}.json`:null,poster:m.poster,tmdbId:m.moviedb_id?String(m.moviedb_id):null,cast:(m.cast||[]).slice(0,30),directors:[],schemaVersion:4,seasonLatestDates,seasons:[...new Set((m.videos||[]).filter(v=>v.season>0&&v.released&&indiaDate(v.released)<=today).map(v=>v.season))],checkedAt};
 }
 export function assessSeries(row,match,identity,facts){
-  const result=assessFilm(sourceTitle(row),match,identity,facts);
+  if(row.providerOriginalLanguages?.some(name=>name.toLowerCase()==='telugu'))return {reason:'original_telugu'};
+  let result=assessFilm(sourceTitle(row),match,identity,facts);
+  // Prefer the exact linked platform's explicit original-audio label over a
+  // conflicting non-Telugu TMDB field when Wikidata has no language facts.
+  // Cast corroboration is required; any evidence of a Telugu original remains
+  // excluded, and independent Wikidata conflicts are never overridden.
+  const original=(row.providerOriginalLanguages||[]).map(name=>Object.entries({...LANGUAGES,Q8097:'Telugu'}).find(([,label])=>label.toLowerCase()===name.toLowerCase())?.[0]);
+  if(result.reason==='original_language_conflict'&&!identity?.languages?.length
+    &&facts?.languageIds?.length&&!facts.languageIds.includes('Q8097')
+    &&original.length&&original.every(Boolean)&&!original.includes('Q8097')
+    &&row.providerAudioLanguages?.includes('Telugu')&&match.castMatches>=2
+    &&row.providerLanguageSourceUrl===row.providerUrl){
+    result=assessFilm(sourceTitle(row),match,identity,{...facts,languageIds:original,sourceUrl:row.providerLanguageSourceUrl});
+    if(!result.reason)result={...result,originalEvidence:'Netflix public original-audio label; conflicting TMDB field superseded',originalSourceUrl:row.providerLanguageSourceUrl,conflictingOriginalLanguageIds:facts.languageIds};
+  }
   if(!result.reason&&result.originalLanguages.includes('Q1860')&&!identity?.languages?.includes('Q1860')&&languageHint(row)!=='Q1860')return {reason:'english_original_uncorroborated'};
   return result;
 }
@@ -180,7 +194,7 @@ export async function refreshSeries(previous={},options={}){
     const lastAiredDate=[row.ottReleaseDate,row.lastAiredDate,airing?.lastAiredDate,season?m.seasonLatestDates?.[season]:null].filter(x=>x&&x<=today).sort().at(-1);
     const originalEvidence=a.originalEvidence==='Publisher explicit dubbing-direction label'&&row.publisherLanguageEvidence?row.publisherLanguageEvidence:a.originalEvidence;
     const originalSourceUrl=a.originalSourceUrl||(originalEvidence===row.publisherLanguageEvidence?row.sourceUrl:undefined);
-    accepted.push({id:m.id,type:'series',name:m.name,releaseInfo:m.releaseInfo||m.year,released:m.released||undefined,firstSeasonReleaseDate:m.firstSeasonReleaseDate||null,firstSeasonReleaseYear:m.year||null,firstSeasonReleaseDateSource:m.firstSeasonReleaseDateSource||null,genres:a.originalLanguages.map(x=>LANGUAGES[x]||'Other'),poster:m.poster,posterCandidates:[...new Set([m.poster,`https://images.metahub.space/poster/small/${m.id}/img`,originals[m.tmdbId]?.poster].filter(Boolean))],originalLanguageIds:a.originalLanguages,originalLanguageEvidence:originalEvidence,originalLanguageSourceUrl:originalSourceUrl,countryEvidence:a.countryEvidence,countrySourceUrl:a.countrySourceUrl,releaseListings:[{sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,season,lastAiredDate,latestEpisode:airing?.lastAiredDate===lastAiredDate?airing.latestEpisode:row.latestEpisode||null,airDateSource:airing?.lastAiredDate===lastAiredDate?airing.sourceUrl:row.lastAiredDate&&row.lastAiredDate===lastAiredDate?row.sourceUrl:season&&m.seasonLatestDates?.[season]===lastAiredDate?`https://v3-cinemeta.strem.io/meta/series/${m.id}.json`:row.sourceUrl,audioEvidence:row.audioEvidence||'Publisher Telugu release listing'}]});
+    accepted.push({id:m.id,type:'series',name:m.name,releaseInfo:m.releaseInfo||m.year,released:m.released||undefined,firstSeasonReleaseDate:m.firstSeasonReleaseDate||null,firstSeasonReleaseYear:m.year||null,firstSeasonReleaseDateSource:m.firstSeasonReleaseDateSource||null,genres:a.originalLanguages.map(x=>LANGUAGES[x]||'Other'),poster:m.poster,posterCandidates:[...new Set([m.poster,`https://images.metahub.space/poster/small/${m.id}/img`,originals[m.tmdbId]?.poster].filter(Boolean))],originalLanguageIds:a.originalLanguages,originalLanguageEvidence:originalEvidence,originalLanguageSourceUrl:originalSourceUrl,conflictingOriginalLanguageIds:a.conflictingOriginalLanguageIds,countryEvidence:a.countryEvidence,countrySourceUrl:a.countrySourceUrl,releaseListings:[{sourceName:row.sourceName||'OTTReleaseMovies',sourceUrl:row.sourceUrl,title:row.title,ottReleaseDate:row.ottReleaseDate,platforms:row.platforms,season,lastAiredDate,latestEpisode:airing?.lastAiredDate===lastAiredDate?airing.latestEpisode:row.latestEpisode||null,airDateSource:airing?.lastAiredDate===lastAiredDate?airing.sourceUrl:row.lastAiredDate&&row.lastAiredDate===lastAiredDate?row.sourceUrl:season&&m.seasonLatestDates?.[season]===lastAiredDate?`https://v3-cinemeta.strem.io/meta/series/${m.id}.json`:row.sourceUrl,audioEvidence:row.audioEvidence||'Publisher Telugu release listing'}]});
   }
   const series=mergeSeriesListings(accepted);
   if(!series.length)throw new Error('No verified series; preserving the last successful series catalog');

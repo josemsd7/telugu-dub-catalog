@@ -85,6 +85,34 @@ test('series identities choose the Indian namesake and verified season before te
  assert.equal(result.series.length,1);assert.equal(result.series[0].id,india.id);assert.deepEqual(result.series[0].reportedSeasons,[2]);
 });
 
+test('a linked Netflix subtitle supplies cast to distinguish Akka from older namesakes',async()=>{
+ const checkedAt='2026-10-31T12:00:00Z',now=Date.parse(checkedAt),providerUrl='https://www.netflix.com/in/title/81772075';
+ const target={id:'tt29625288',name:'Akka',type:'series',countries:['india'],schemaVersion:4,year:'2026',releaseInfo:'2026–',firstSeasonReleaseDate:'2026-10-30',cast:['Keerthy Suresh','Radhika Apte','Tanvi Azmi'],tmdbId:'243555',seasons:[1],checkedAt};
+ const namesakes=['tt12434596','tt38095993'].map((id,i)=>({...target,id,year:i?'2020':'2014',cast:[],seasons:[],firstSeasonReleaseDate:null}));
+ const all=[...namesakes,target],empty={items:[],languages:[],countries:[],tmdbIds:[],checkedAt};
+ const previous={searchCache:{akka:{hits:all.map(({id,name})=>({id,name})),checkedAt}},metadataCache:Object.fromEntries(all.map(m=>[m.id,m])),identities:Object.fromEntries(all.map(m=>[m.id,empty])),providerFactsCache:{[providerUrl]:{title:'Akka: The Protectors',cast:target.cast,type:'TVSeries',sourceUrl:providerUrl,checkedAt,schemaVersion:2,originalLanguages:['Hindi'],audioLanguages:['Hindi','Telugu']}}};
+ previous.originalLanguageCache={'243555':{title:'Akka',languageIds:['Q5885'],countries:['india'],sourceUrl:'https://www.themoviedb.org/tv/243555',checkedAt}};
+ const r={...row,title:'Akka',ottReleaseDate:'2026-10-30',castText:'',providerUrl};
+ const options={now,source:{rows:[r]},fetcher:async()=>{throw Error('Unexpected fetch');}};
+ const first=await refreshSeries(previous,options);
+ assert.deepEqual(first.series.map(x=>x.id),[target.id]);
+ assert.equal(first.series[0].firstSeasonReleaseDate,'2026-10-30');
+ assert.deepEqual(first.series[0].originalLanguageIds,['Q1568']);
+ assert.equal(first.series[0].originalLanguageSourceUrl,providerUrl);
+ assert.deepEqual(first.series[0].conflictingOriginalLanguageIds,['Q5885']);
+ const second=await refreshSeries(first,{...options,now:now+1000});
+ assert.deepEqual(second.series.map(x=>x.id),[target.id]);
+ const unrelated={...previous,providerFactsCache:{[providerUrl]:{...previous.providerFactsCache[providerUrl],title:'Akka Returns: The Protectors'}}};
+ await assert.rejects(refreshSeries(unrelated,options),/No verified series/);
+ const match={meta:target,titleScore:100,castMatches:3};
+ const evidence={...r,providerOriginalLanguages:['Hindi'],providerAudioLanguages:['Hindi','Telugu'],providerLanguageSourceUrl:providerUrl};
+ const facts=previous.originalLanguageCache['243555'];
+ assert.equal(assessSeries(evidence,{...match,castMatches:1},empty,facts).reason,'original_language_conflict');
+ assert.equal(assessSeries(evidence,match,{...empty,languages:['Q5885']},facts).reason,'original_language_conflict');
+ assert.equal(assessSeries(evidence,match,empty,{...facts,languageIds:['Q8097']}).reason,'original_telugu');
+ assert.equal(assessSeries({...evidence,providerOriginalLanguages:['Telugu']},match,empty,facts).reason,'original_telugu');
+});
+
 test('a lone English-original public field cannot relabel an Indian regional original',()=>{
  const match={meta:{name:'Example',countries:['india'],cast:['Actor One'],tmdbId:'12'},titleScore:100,castMatches:1};
  const facts={title:'Example',countries:['india'],languageIds:['Q1860'],sourceUrl:'https://www.themoviedb.org/tv/12'};

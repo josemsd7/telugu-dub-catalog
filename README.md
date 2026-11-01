@@ -10,7 +10,11 @@ Open https://josemsd7.github.io/telugu-dub-catalog/ and click **Install in Strem
 https://josemsd7.github.io/telugu-dub-catalog/manifest.json
 ```
 
-No playback, provider login, debrid service, paid API, API key or additional account is required. GitHub Actions runs the updates independently of ChatGPT or any OpenAI API.
+No playback, provider login, debrid service, paid API, API key or additional account is required. Title details are supplied by this add-on through standard `meta` endpoints, including series episode IDs, so clients such as Nuvio can open catalog entries without relying on a separate metadata add-on. Cinemeta details are cached during automatic updates; this does not add streaming links or playback. GitHub Actions runs the updates independently of ChatGPT or any OpenAI API.
+
+When a publisher's exact Netflix title link uses an extended name, such as **Akka: The Protectors** for **Akka**, its matching main title can supply cast evidence to distinguish older namesakes. This applies only to the linked, ID-verified provider page; general title searches still require an unambiguous series identity.
+
+For series, the exact linked Netflix page's explicit original-audio label can supersede a conflicting non-Telugu TMDB field when at least two cast members match, Telugu audio is listed, and Wikidata has no original-language facts. The conflicting field remains in coverage data. This resolves Akka's Hindi-original Netflix label versus TMDB's Tamil field. Any Telugu-original evidence or independent Wikidata conflict still excludes the title.
 
 ## Two separate catalogs
 

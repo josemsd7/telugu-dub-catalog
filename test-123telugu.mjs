@@ -35,6 +35,16 @@ test('linked Netflix facts must match both the exact title ID and media type',()
   assert.throws(()=>parseProviderFacts(provider(),'https://unrelated.example/title/82775969'),/Unsupported/);
 });
 
+test('provider audio evidence comes from the Audio section, never subtitle or script labels',()=>{
+ const html=provider('TVSeries')+'<div><h4>Audio</h4><span>English, Hindi [Original], Tamil, and Telugu</span></div><div><h4>Subtitles</h4><span>Telugu [Original]</span></div>';
+ const facts=parseProviderFacts(html,providerUrl,'TVSeries');
+ assert.deepEqual(facts.originalLanguages,['Hindi']);assert.ok(facts.audioLanguages.includes('Telugu'));
+ const subtitleOnly=parseProviderFacts(provider('TVSeries')+'<h4>Subtitles</h4><span>Hindi [Original], Telugu</span><script>Hindi [Original], Telugu</script>',providerUrl,'TVSeries');
+ assert.deepEqual(subtitleOnly.originalLanguages,[]);assert.deepEqual(subtitleOnly.audioLanguages,[]);
+ const conflicting=parseProviderFacts(html+'<h4>Audio</h4><span>Tamil [Original], Telugu</span>',providerUrl,'TVSeries');
+ assert.deepEqual(conflicting.originalLanguages,[]);
+});
+
 test('publisher dubbing labels and linked cast resolve the correct Sigma and remain automatic on refresh',async()=>{
   const now=Date.parse('2026-10-30T01:00:00Z'),checkedAt=new Date(now).toISOString();
   const target={id:'tt123456',name:'Sigma',type:'movie',year:'2026',countries:['india'],cast:['Sundeep Kishan','Faria Abdullah'],directors:['Jason Sanjay'],tmdbId:null,checkedAt};

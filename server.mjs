@@ -9,7 +9,7 @@ let token=process.env.ADDON_TOKEN;
 if(!token){try{token=(await readFile(tokenFile,'utf8')).trim();}catch{token=randomBytes(24).toString('base64url');await writeFile(tokenFile,token,{mode:0o600});}}
 let state={};try{state=JSON.parse(await readFile(file,'utf8'));}catch{}
 const seriesFile=new URL('series.json',dir);let seriesState={};try{seriesState=JSON.parse(await readFile(seriesFile,'utf8'));}catch{}
-const store={getSeries:async()=>seriesState,get:async()=>state,put:async data=>{await writeFile(new URL('catalog.json.tmp',dir),JSON.stringify(data));await rename(new URL('catalog.json.tmp',dir),file);state=data;}};
+const store={getDetails:async()=>{try{return JSON.parse(await readFile(new URL('title-meta.json',dir),'utf8'));}catch{return {};}},getSeries:async()=>seriesState,get:async()=>state,put:async data=>{await writeFile(new URL('catalog.json.tmp',dir),JSON.stringify(data));await rename(new URL('catalog.json.tmp',dir),file);state=data;}};
 let seriesRunning=false;
 async function updateSeries(){if(seriesRunning)return;seriesRunning=true;try{const next=await refreshSeries(seriesState);await writeFile(new URL('series.json.tmp',dir),JSON.stringify(next));await rename(new URL('series.json.tmp',dir),seriesFile);seriesState=next;console.log(`Verified series catalog: ${next.series.length} shows`);}catch(error){seriesState.lastError=error.message;console.error('Series refresh failed; preserving prior data:',error.message);}finally{seriesRunning=false;}}
 let running=false;
@@ -24,4 +24,5 @@ if(!state.checkedAt||Date.now()-Date.parse(state.checkedAt)>6*3600000)void updat
 setInterval(update,6*3600000).unref();
 if(!seriesState.checkedAt||Date.now()-Date.parse(seriesState.checkedAt)>6*3600000)void updateSeries();
 setInterval(updateSeries,6*3600000).unref();
+
 

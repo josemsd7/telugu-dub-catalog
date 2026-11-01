@@ -13,16 +13,30 @@ def title_id(url):
     except (ValueError,TypeError):return None
 
 class Documents(HTMLParser):
-    def __init__(self):super().__init__();self.parts=None;self.documents=[]
+    def __init__(self):
+        super().__init__();self.parts=None;self.documents=[]
+        self.heading=None;self.next_audio=False;self.audio_parts=None;self.audio_blocks=[]
     def handle_starttag(self,tag,attrs):
         if tag=='script' and dict(attrs).get('type')=='application/ld+json':self.parts=[]
+        if tag=='h4':self.heading=[]
+        if self.next_audio:
+            if tag=='span':self.audio_parts=[]
+            self.next_audio=False
     def handle_data(self,text):
         if self.parts is not None:self.parts.append(text)
+        if self.heading is not None:self.heading.append(text)
+        if self.audio_parts is not None:self.audio_parts.append(text)
     def handle_endtag(self,tag):
         if tag=='script' and self.parts is not None:
             try:self.documents.append(json.loads(''.join(self.parts)))
             except ValueError:pass
             self.parts=None
+        if tag=='h4' and self.heading is not None:
+            self.next_audio=' '.join(' '.join(self.heading).split())=='Audio'
+            self.heading=None
+        if tag=='span' and self.audio_parts is not None:
+            self.audio_blocks.append(' '.join(' '.join(self.audio_parts).split()))
+            self.audio_parts=None
 
 def objects(value):
     if isinstance(value,list):
@@ -48,4 +62,15 @@ if __name__=='__main__':
         return list(dict.fromkeys(result))[:40]
     cast=people('actors','actor','directors','director')
     if not item.get('name') or not cast:sys.exit('Public title page lacks title and cast facts')
-    print(json.dumps({'title':item['name'][:300],'cast':cast,'type':expected,'sourceUrl':url}))
+    audio=[];original=[]
+    # Only the visible Audio section of this ID-verified page is evidence;
+    # subtitle labels and unrelated script strings cannot establish audio.
+    if len(set(parser.audio_blocks))==1:
+        for label in re.split(r',\s*|\s+and\s+',parser.audio_blocks[0]):
+            label=re.sub(r'^and\s+','',label.strip())
+            match=re.fullmatch(r'([A-Za-z ]+)\s+\[Original\]',label)
+            if match:original.append(match[1].strip());audio.append(match[1].strip())
+            elif re.fullmatch(r'[A-Za-z ]+',label):audio.append(label)
+    print(json.dumps({'title':item['name'][:300],'cast':cast,'type':expected,'sourceUrl':url,
+                     'audioLanguages':list(dict.fromkeys(audio)),
+                     'originalLanguages':list(dict.fromkeys(original)),'schemaVersion':2}))

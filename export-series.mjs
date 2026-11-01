@@ -2,11 +2,15 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import {seriesCatalog,seriesStatus,SERIES_ID} from './src/series-core.mjs';
 import {cachePosters} from './posters.mjs';
+import {metadataResources} from './src/title-meta.mjs';
 export async function exportSeries(data,destination=new URL('./public/',import.meta.url)){
   if(!data.series?.length)throw new Error('Refusing to export an empty series catalog');
   const route=`catalog/series/${SERIES_ID}`;
   await mkdir(new URL(route+'/',destination),{recursive:true});
   const save=(name,body)=>writeFile(new URL(name,destination),JSON.stringify(body));
+  const manifestFile=new URL('manifest.json',destination),info=JSON.parse(await readFile(manifestFile,'utf8'));
+  info.resources=[...info.resources.filter(x=>typeof x==='string'||!x.types?.includes('series')),...metadataResources(data.series)];
+  await writeFile(manifestFile,JSON.stringify(info));
   await save(route+'.json',seriesCatalog(data));
   for(let skip=0;skip<=Math.ceil(data.series.length/100)*100;skip+=100)await save(`${route}/skip=${skip}.json`,seriesCatalog(data,`skip=${skip}`));
   const folder=new URL('series/',destination);await mkdir(folder,{recursive:true});
@@ -20,3 +24,4 @@ if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   if(!base)throw new Error('Set ADDON_BASE_URL to the add-on URL');
   console.log(JSON.stringify(await cachePosters({movies:data.series},new URL('./public/',import.meta.url),base,{catalogType:'series',catalogId:SERIES_ID,statusPath:'series/status.json'})));
 }
+

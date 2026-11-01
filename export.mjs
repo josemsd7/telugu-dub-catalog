@@ -8,7 +8,7 @@ export async function exportStatic(data,destination=new URL('./public/',import.m
   const route=new URL('catalog/movie/telugu-dubbed/',destination);
   await mkdir(route,{recursive:true});
   const save=(name,body)=>writeFile(new URL(name,destination),JSON.stringify(body));
-  const info=manifest();
+  const info=manifest(data.movies);
   // Static hosting supports browse and pagination. Do not advertise dynamic search.
   for(const entry of info.catalogs)entry.extra=[{name:'skip'}];
   await save('manifest.json',info);

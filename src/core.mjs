@@ -1,12 +1,13 @@
 import {RELEASE_TIME_ZONE} from './release-time.mjs';
 import {VERSION,normalize,newestFirst} from './identity.mjs';
 import {seriesCatalog,seriesStatus,SERIES_ID} from './series-core.mjs';
+import {metadataResources,titleMeta,fetchTitleMeta} from './title-meta.mjs';
 export {VERSION,LANGUAGES,normalize,jsonFetch,parallelMap,wikiQuery,wikiRecords,releaseDate,newestFirst} from './identity.mjs';
 export {refreshFromOtt as refresh} from './source-refresh.mjs';
 const MAX_AGE=6*60*60*1000;
 
-export function manifest() {
-  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalog only. Indian films and series listed with Telugu audio, combining OTTReleaseMovies, Trendraja, Sacnilk and 123telugu, ordered by earliest reported Telugu OTT dates. Movies and series appear in separate catalogs. Series use 91mobiles alongside the other sources and are ordered by the original first-season premiere date, newest first; later seasons and episode updates do not change that order. Telugu originals, tentative releases and unverified identities excluded. Wikidata, TMDB and Cinemeta verify film identities and original languages.',resources:['catalog'],types:['movie','series'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Available in Telugu',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]},{type:'series',id:SERIES_ID,name:'Available in Telugu — Series & TV',extra:[{name:'skip'}]}],behaviorHints:{configurable:false}};
+export function manifest(movies=[],shows=[]) {
+  return {id:'private.telugu.dubbed.digital.catalog',version:VERSION,name:'Telugu Dubs — Latest OTT',description:'Catalogs and title details, with no playback. Indian films and series listed with Telugu audio, combining OTTReleaseMovies, Trendraja, Sacnilk and 123telugu, ordered by earliest reported Telugu OTT dates. Movies and series appear in separate catalogs. Series use 91mobiles alongside the other sources and are ordered by the original first-season premiere date, newest first; later seasons and episode updates do not change that order. Telugu originals, tentative releases and unverified identities excluded. Wikidata, TMDB and Cinemeta verify film identities and original languages.',resources:['catalog',...metadataResources([...movies,...shows])],types:['movie','series'],catalogs:[{type:'movie',id:'telugu-dubbed',name:'Available in Telugu',extra:[{name:'skip'},{name:'search'},{name:'genre',options:['Tamil','Hindi','Malayalam','Kannada','English','Bengali','Marathi','Punjabi','Odia','Other']}]},{type:'series',id:SERIES_ID,name:'Available in Telugu — Series & TV',extra:[{name:'skip'}]}],behaviorHints:{configurable:false}};
 }
 
 export function catalog(data,extra='') {
@@ -33,8 +34,18 @@ export async function handle(request,env,store,context={}) {
   const headers={'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer','Cache-Control':'private, max-age=600'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, OPTIONS'}});
   if(request.method!=='GET')return new Response('Method not allowed',{status:405});
-  if(route==='/manifest.json')return Response.json(manifest(),{headers});
   const data=await store.get()||{};
+  if(route==='/manifest.json')return Response.json(manifest(data.movies||[],(await store.getSeries?.())?.series||[]),{headers});
+  const metaMatch=route.match(/^\/meta\/(movie|series)\/(tt\d+)\.json$/);
+  if(metaMatch){
+    const [,,id]=metaMatch,type=metaMatch[1],items=type==='movie'?data.movies:((await store.getSeries?.())?.series||[]);
+    const item=items?.find(x=>x.id===id&&x.type===type);
+    if(!item)return Response.json({meta:null},{status:404,headers});
+    try{
+      const cached=(await store.getDetails?.())?.entries?.[`${type}/${id}`]?.meta;
+      return Response.json({meta:titleMeta(item,cached||await fetchTitleMeta(item,context.fetcher||fetch))},{headers});
+    }catch{return Response.json({error:'Title metadata temporarily unavailable'},{status:503,headers});}
+  }
   if(route==='/status.json')return Response.json(status(data),{headers:{...headers,'Cache-Control':'no-store'}});
   if(route==='/series/status.json')return Response.json(seriesStatus(await store.getSeries?.()||{}),{headers});
   const seriesMatch=route.match(/^\/catalog\/series\/telugu-dubbed-series(?:\/(.*))?\.json$/);
