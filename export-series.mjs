@@ -13,6 +13,9 @@ export async function exportSeries(data,destination=new URL('./public/',import.m
   await writeFile(manifestFile,JSON.stringify(info));
   await save(route+'.json',seriesCatalog(data));
   for(let skip=0;skip<=Math.ceil(data.series.length/100)*100;skip+=100)await save(`${route}/skip=${skip}.json`,seriesCatalog(data,`skip=${skip}`));
+  // Desktop clients can request the exact number of returned items after a
+  // short final page. A valid empty page ends pagination without losing Home.
+  await save(`${route}/skip=${data.series.length}.json`,seriesCatalog(data,`skip=${data.series.length}`));
   const folder=new URL('series/',destination);await mkdir(folder,{recursive:true});
   await save('series/status.json',{...seriesStatus(data),staleAfter:new Date(Date.parse(data.checkedAt)+6*3600000).toISOString()});
   await save('series/coverage.json',{checkedAt:data.checkedAt,accepted:data.series.map(({poster,posterCandidates,...facts})=>facts),excluded:data.audit||[],sources:data.sourceStatus,limits:data.limits});

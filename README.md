@@ -30,6 +30,8 @@ The exact SV Telugu OTT URL was rechecked in the browser on October 27, 2026 and
 
 Series sources and identity caches are stored separately in `data/series.json`. Series refresh failure preserves the previous series snapshot. Both catalogs refresh on the existing six-hour workflow and use hosted poster images.
 
+Static pagination also exports an empty response at the exact item count, such as `skip=27.json` after 27 series. Nuvio Desktop's Home preview follows that offset even after a short first page; returning JSON instead of a 404 lets it retain the completed series row. The same end-of-catalog response is included for movies.
+
 - [Series source status and freshness](https://josemsd7.github.io/telugu-dub-catalog/series/status.json)
 - [Series coverage and exclusions](https://josemsd7.github.io/telugu-dub-catalog/series/coverage.json)
 

@@ -76,6 +76,34 @@ test('static export provides two separate typed routes, pagination, and series c
   assert.equal((await read('catalog/movie/telugu-dubbed.json')).metas[0].id,movie.id);
  }finally{await rm(directory,{recursive:true,force:true});}
 });
+test('Nuvio Desktop Home can finish short catalogs and pagination ends after the final item',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'desktop-home-catalog-')),dest=pathToFileURL(directory+'/');
+ try{
+  const checkedAt='2026-10-31T00:00:00Z';
+  for(const count of [27,63,127]){
+   const movies=Array.from({length:count},(_,i)=>({...movie,id:`tt${700000+i}`,name:`Movie ${i}`,platforms:[]}));
+   const series=Array.from({length:count},(_,i)=>({...show,id:`tt${800000+i}`,name:`Show ${i}`,platforms:[]}));
+   await exportStatic({checkedAt,movies},dest);await exportSeries({checkedAt,series},dest);
+   for(const [type,id] of [['movie','telugu-dubbed'],['series','telugu-dubbed-series']]){
+    const route=`catalog/${type}/${id}`;
+    const read=async skip=>JSON.parse(await readFile(join(directory,skip==null?route+'.json':`${route}/skip=${skip}.json`),'utf8'));
+    // The desktop Home preview follows returned counts until it has 64 items
+    // or reaches an empty page. Any missing page rejects the complete shelf.
+    let items=[],nextSkip=null,pages=0;
+    do{
+     const page=await read(nextSkip);items.push(...page.metas.slice(0,64-items.length));
+     nextSkip=page.metas.length?(nextSkip||0)+page.metas.length:null;pages++;
+    }while(nextSkip!=null&&items.length<64&&pages<4);
+    assert.equal(items.length,Math.min(count,64));
+    assert.equal(pages,count<64?2:1);
+    const loaded=[];let offset=null;
+    do{const page=await read(offset);loaded.push(...page.metas);offset=page.metas.length?(offset||0)+page.metas.length:null;}while(offset!=null);
+    assert.equal(loaded.length,count);assert.equal(new Set(loaded.map(x=>x.id)).size,count);
+   }
+  }
+ }finally{await rm(directory,{recursive:true,force:true});}
+});
+
 test('series identities choose the Indian namesake and verified season before testing ambiguity',async()=>{
  const checkedAt='2026-10-27T00:00:00Z',now=Date.parse(checkedAt),r={...row,title:'Example Season 2'};
  const india={id:'tt12345',name:'Example',type:'series',countries:['india'],schemaVersion:4,year:'2020',releaseInfo:'2020-',cast:['Actor One'],directors:[],tmdbId:'12',seasons:[1,2],checkedAt};
