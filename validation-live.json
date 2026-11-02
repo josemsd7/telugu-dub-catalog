@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-02T01:39:12.845Z",
+      "checkedAt": "2026-11-02T07:52:39.230Z",
       "rowCount": 251,
       "rawRowCount": 252,
       "pagesFetched": 1,
@@ -32,20 +32,20 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-02T01:39:12.845Z",
+      "checkedAt": "2026-11-02T07:52:39.230Z",
       "rowCount": 240,
       "rawRowCount": 1147,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 44
+      "movieCount": 45
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-02T01:39:12.845Z",
+      "checkedAt": "2026-11-02T07:52:39.230Z",
       "rowCount": 375,
       "rawRowCount": 420,
       "pagesFetched": 21,
@@ -58,7 +58,7 @@
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-02T01:39:12.845Z",
+      "checkedAt": "2026-11-02T07:52:39.230Z",
       "rowCount": 15,
       "rawRowCount": 15,
       "pagesFetched": 1,
@@ -76,16 +76,17 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 177,
+  "acceptedListingCount": 178,
   "duplicatesMerged": 47,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 130,
-  "checkedAt": "2026-11-02T01:39:12.845Z",
+  "verifiedMovieCount": 131,
+  "checkedAt": "2026-11-02T07:52:39.230Z",
   "stale": false,
   "sourceRowCount": 881,
   "candidateCount": 546,
   "platformCounts": {
     "Netflix": 39,
+    "ETV Win": 4,
     "ZEE5": 15,
     "Prime Video": 28,
     "Manorama Max": 4,
@@ -94,7 +95,6 @@
     "JioHotstar": 15,
     "Sun NXT": 10,
     "SonyLIV": 9,
-    "ETV Win": 3,
     "JioCinema": 1,
     "Saina Play": 1
   },
@@ -104,12 +104,12 @@
     "tentative_or_subtitles_only": 2,
     "original_telugu": 210,
     "non_indian_language": 15,
-    "missing_ott_date": 3,
-    "upcoming": 4,
-    "ambiguous_movie_match": 43,
+    "missing_ott_date": 2,
+    "upcoming": 5,
     "no_matching_movie_id": 65,
+    "ambiguous_movie_match": 43,
     "country_conflict": 5,
-    "original_language_unconfirmed": 8,
+    "original_language_unconfirmed": 7,
     "non_indian_film": 50,
     "cast_mismatch": 4,
     "title_mismatch": 5,
@@ -127,7 +127,7 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 33.58,
+  "durationSeconds": 40.915,
   "examples": [
     {
       "id": "tt39239754",
@@ -178,6 +178,19 @@
       ],
       "originalLanguage": [
         "Tamil"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
+    {
+      "id": "tt39281522",
+      "name": "Fight Maha",
+      "year": "2026",
+      "ottReleaseDate": "2026-10-22",
+      "platforms": [
+        "ETV Win"
+      ],
+      "originalLanguage": [
+        "English"
       ],
       "originalLanguageEvidence": "TMDB public original-language field"
     },
@@ -274,19 +287,6 @@
         "Malayalam"
       ],
       "originalLanguageEvidence": "TMDB public original-language field"
-    },
-    {
-      "id": "tt37535100",
-      "name": "Bethlehem Kudumba Unit",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-02",
-      "platforms": [
-        "JioHotstar"
-      ],
-      "originalLanguage": [
-        "Malayalam"
-      ],
-      "originalLanguageEvidence": "Wikidata original-language metadata"
     }
   ]
 }
