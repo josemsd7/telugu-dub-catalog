@@ -5,7 +5,7 @@
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "datePolicy": "earliest_reported_telugu_ott_date",
-  "coverageWindowStart": "2025-11-05",
+  "coverageWindowStart": "2025-11-06",
   "coverageHistoryDays": 365,
   "sourceUrls": [
     "https://ottreleasemovies.com/",
@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-05T13:44:21.457Z",
+      "checkedAt": "2026-11-05T19:25:20.857Z",
       "rowCount": 251,
       "rawRowCount": 252,
       "pagesFetched": 1,
@@ -32,21 +32,21 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-05T13:44:21.457Z",
+      "checkedAt": "2026-11-05T19:25:20.857Z",
       "rowCount": 242,
       "rawRowCount": 1150,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 46
+      "movieCount": 47
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-05T13:44:21.457Z",
-      "rowCount": 381,
+      "checkedAt": "2026-11-05T19:25:20.857Z",
+      "rowCount": 379,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
@@ -58,13 +58,13 @@
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-05T13:44:21.457Z",
+      "checkedAt": "2026-11-05T19:25:20.857Z",
       "rowCount": 27,
       "rawRowCount": 13,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 2
+      "movieCount": 4
     },
     {
       "key": "svteluguott",
@@ -76,15 +76,17 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 182,
-  "duplicatesMerged": 50,
+  "acceptedListingCount": 185,
+  "duplicatesMerged": 51,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 132,
-  "checkedAt": "2026-11-05T13:44:21.457Z",
+  "verifiedMovieCount": 134,
+  "checkedAt": "2026-11-05T19:25:20.857Z",
   "stale": false,
-  "sourceRowCount": 901,
-  "candidateCount": 549,
+  "sourceRowCount": 899,
+  "candidateCount": 551,
   "platformCounts": {
+    "JioHotstar": 16,
+    "SonyLIV": 10,
     "Netflix": 40,
     "ETV Win": 4,
     "ZEE5": 15,
@@ -92,25 +94,23 @@
     "Manorama Max": 4,
     "Aha": 6,
     "Lionsgate Play": 1,
-    "JioHotstar": 15,
     "Sun NXT": 10,
-    "SonyLIV": 9,
     "JioCinema": 1,
     "Saina Play": 1
   },
   "exclusions": {
     "not_a_movie": 75,
-    "telugu_audio_not_listed": 215,
+    "telugu_audio_not_listed": 217,
     "tentative_or_subtitles_only": 2,
     "original_telugu": 213,
     "non_indian_language": 15,
     "missing_ott_date": 2,
-    "upcoming": 14,
+    "upcoming": 8,
     "no_matching_movie_id": 65,
     "ambiguous_movie_match": 42,
-    "non_indian_film": 51,
+    "original_language_unconfirmed": 6,
+    "non_indian_film": 49,
     "country_conflict": 6,
-    "original_language_unconfirmed": 5,
     "cast_mismatch": 4,
     "title_mismatch": 5,
     "indian_origin_unconfirmed": 4,
@@ -127,8 +127,34 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 22.523,
+  "durationSeconds": 50.293,
   "examples": [
+    {
+      "id": "tt34284946",
+      "name": "Im Game",
+      "year": "2026",
+      "ottReleaseDate": "2026-11-06",
+      "platforms": [
+        "JioHotstar"
+      ],
+      "originalLanguage": [
+        "Malayalam"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
+    {
+      "id": "tt38097205",
+      "name": "Meesaya Murukku 2",
+      "year": "2026",
+      "ottReleaseDate": "2026-11-06",
+      "platforms": [
+        "SonyLIV"
+      ],
+      "originalLanguage": [
+        "Tamil"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
     {
       "id": "tt34792531",
       "name": "Avaraachan & Sons",
@@ -258,35 +284,6 @@
         "Malayalam"
       ],
       "originalLanguageEvidence": "Wikidata original-language metadata"
-    },
-    {
-      "id": "tt22797990",
-      "name": "Khalifa",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-08",
-      "platforms": [
-        "Prime Video",
-        "Aha",
-        "Manorama Max",
-        "Lionsgate Play"
-      ],
-      "originalLanguage": [
-        "Malayalam"
-      ],
-      "originalLanguageEvidence": "Wikidata original-language metadata"
-    },
-    {
-      "id": "tt36596965",
-      "name": "Mandaadi",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-08",
-      "platforms": [
-        "Netflix"
-      ],
-      "originalLanguage": [
-        "Tamil"
-      ],
-      "originalLanguageEvidence": "TMDB public original-language field"
     }
   ]
 }
