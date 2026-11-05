@@ -19,46 +19,46 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-04T19:27:28.466Z",
+      "checkedAt": "2026-11-05T01:42:16.969Z",
       "rowCount": 251,
       "rawRowCount": 252,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 63
+      "movieCount": 64
     },
     {
       "key": "trendraja",
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-04T19:27:28.466Z",
+      "checkedAt": "2026-11-05T01:42:16.969Z",
       "rowCount": 241,
       "rawRowCount": 1149,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 45
+      "movieCount": 46
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-04T19:27:28.466Z",
+      "checkedAt": "2026-11-05T01:42:16.969Z",
       "rowCount": 381,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
       "errors": [],
-      "movieCount": 69
+      "movieCount": 70
     },
     {
       "key": "123telugu",
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-04T19:27:28.466Z",
+      "checkedAt": "2026-11-05T01:42:16.969Z",
       "rowCount": 24,
       "rawRowCount": 23,
       "pagesFetched": 1,
@@ -76,11 +76,11 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 179,
-  "duplicatesMerged": 47,
+  "acceptedListingCount": 182,
+  "duplicatesMerged": 50,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 132,
-  "checkedAt": "2026-11-04T19:27:28.466Z",
+  "checkedAt": "2026-11-05T01:42:16.969Z",
   "stale": false,
   "sourceRowCount": 897,
   "candidateCount": 549,
@@ -110,7 +110,7 @@
     "ambiguous_movie_match": 42,
     "non_indian_film": 51,
     "country_conflict": 6,
-    "original_language_unconfirmed": 8,
+    "original_language_unconfirmed": 5,
     "cast_mismatch": 4,
     "title_mismatch": 5,
     "indian_origin_unconfirmed": 4,
@@ -127,7 +127,7 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 46.821,
+  "durationSeconds": 44.802,
   "examples": [
     {
       "id": "tt34792531",
@@ -166,7 +166,7 @@
       "originalLanguage": [
         "Tamil"
       ],
-      "originalLanguageEvidence": "Publisher explicit dubbing-direction label"
+      "originalLanguageEvidence": "TMDB public original-language field"
     },
     {
       "id": "tt38990864",
