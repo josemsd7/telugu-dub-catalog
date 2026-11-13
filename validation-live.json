@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-12T19:24:51.712Z",
+      "checkedAt": "2026-11-13T01:40:22.204Z",
       "rowCount": 259,
       "rawRowCount": 260,
       "pagesFetched": 1,
@@ -32,39 +32,39 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-12T19:24:51.712Z",
+      "checkedAt": "2026-11-13T01:40:22.204Z",
       "rowCount": 242,
       "rawRowCount": 1151,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 46
+      "movieCount": 45
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-12T19:24:51.712Z",
+      "checkedAt": "2026-11-13T01:40:22.204Z",
       "rowCount": 371,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
       "errors": [],
-      "movieCount": 69
+      "movieCount": 68
     },
     {
       "key": "123telugu",
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-12T19:24:51.712Z",
+      "checkedAt": "2026-11-13T01:40:22.204Z",
       "rowCount": 35,
       "rawRowCount": 13,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 5
+      "movieCount": 4
     },
     {
       "key": "svteluguott",
@@ -76,11 +76,11 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 187,
-  "duplicatesMerged": 53,
+  "acceptedListingCount": 184,
+  "duplicatesMerged": 50,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 134,
-  "checkedAt": "2026-11-12T19:24:51.712Z",
+  "checkedAt": "2026-11-13T01:40:22.204Z",
   "stale": false,
   "sourceRowCount": 907,
   "candidateCount": 562,
@@ -107,7 +107,7 @@
     "missing_ott_date": 2,
     "upcoming": 4,
     "no_matching_movie_id": 70,
-    "ambiguous_movie_match": 45,
+    "ambiguous_movie_match": 48,
     "original_language_unconfirmed": 7,
     "non_indian_film": 48,
     "country_conflict": 4,
@@ -125,13 +125,9 @@
     "A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.",
     "SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub."
   ],
-  "refreshWarnings": [
-    "tt0481237: Metadata HTTP 504",
-    "tt38755684: Metadata HTTP 504",
-    "tt0374114: Metadata HTTP 504"
-  ],
+  "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 65.062,
+  "durationSeconds": 48.639,
   "examples": [
     {
       "id": "tt33318732",
@@ -148,7 +144,7 @@
     },
     {
       "id": "tt34284946",
-      "name": "I'm Game",
+      "name": "Im Game",
       "year": "2026",
       "ottReleaseDate": "2026-11-06",
       "platforms": [
