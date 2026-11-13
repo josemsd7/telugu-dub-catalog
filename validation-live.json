@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-13T07:47:46.852Z",
+      "checkedAt": "2026-11-13T13:40:56.152Z",
       "rowCount": 260,
       "rawRowCount": 261,
       "pagesFetched": 1,
@@ -32,9 +32,9 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-13T07:47:46.852Z",
-      "rowCount": 242,
-      "rawRowCount": 1151,
+      "checkedAt": "2026-11-13T13:40:56.152Z",
+      "rowCount": 243,
+      "rawRowCount": 1152,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
@@ -45,20 +45,20 @@
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-13T07:47:46.852Z",
-      "rowCount": 371,
+      "checkedAt": "2026-11-13T13:40:56.152Z",
+      "rowCount": 384,
       "rawRowCount": 420,
       "pagesFetched": 21,
       "pagesAvailable": 25,
       "errors": [],
-      "movieCount": 68
+      "movieCount": 73
     },
     {
       "key": "123telugu",
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-13T07:47:46.852Z",
+      "checkedAt": "2026-11-13T13:40:56.152Z",
       "rowCount": 36,
       "rawRowCount": 13,
       "pagesFetched": 1,
@@ -76,17 +76,17 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 184,
-  "duplicatesMerged": 50,
+  "acceptedListingCount": 189,
+  "duplicatesMerged": 54,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 134,
-  "checkedAt": "2026-11-13T07:47:46.852Z",
+  "verifiedMovieCount": 135,
+  "checkedAt": "2026-11-13T13:40:56.152Z",
   "stale": false,
-  "sourceRowCount": 909,
-  "candidateCount": 562,
+  "sourceRowCount": 923,
+  "candidateCount": 567,
   "platformCounts": {
     "Prime Video": 29,
-    "JioHotstar": 15,
+    "JioHotstar": 16,
     "SonyLIV": 10,
     "Netflix": 40,
     "ETV Win": 4,
@@ -101,19 +101,19 @@
   "exclusions": {
     "missing_ott_date": 3,
     "not_a_movie": 77,
-    "telugu_audio_not_listed": 213,
+    "telugu_audio_not_listed": 222,
     "tentative_or_subtitles_only": 2,
     "original_telugu": 220,
     "non_indian_language": 15,
     "upcoming": 4,
-    "ambiguous_movie_match": 48,
-    "no_matching_movie_id": 70,
-    "original_language_unconfirmed": 7,
-    "non_indian_film": 48,
+    "no_matching_movie_id": 69,
+    "ambiguous_movie_match": 50,
+    "original_language_unconfirmed": 8,
+    "non_indian_film": 47,
     "country_conflict": 4,
     "cast_mismatch": 4,
     "title_mismatch": 5,
-    "indian_origin_unconfirmed": 4,
+    "indian_origin_unconfirmed": 3,
     "identity_conflict": 1
   },
   "limits": [
@@ -125,10 +125,25 @@
     "A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.",
     "SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub."
   ],
-  "refreshWarnings": [],
+  "refreshWarnings": [
+    "tt0459543: Metadata HTTP 504"
+  ],
   "lastError": null,
-  "durationSeconds": 39.835,
+  "durationSeconds": 71.711,
   "examples": [
+    {
+      "id": "tt40856286",
+      "name": "VIBE",
+      "year": "2026",
+      "ottReleaseDate": "2026-11-13",
+      "platforms": [
+        "Prime Video"
+      ],
+      "originalLanguage": [
+        "Hindi"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
     {
       "id": "tt33318732",
       "name": "Jailer 2",
@@ -256,19 +271,6 @@
       ],
       "originalLanguage": [
         "Malayalam"
-      ],
-      "originalLanguageEvidence": "TMDB public original-language field"
-    },
-    {
-      "id": "tt38916037",
-      "name": "Lenin Pandiyan",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-16",
-      "platforms": [
-        "Prime Video"
-      ],
-      "originalLanguage": [
-        "Tamil"
       ],
       "originalLanguageEvidence": "TMDB public original-language field"
     },
