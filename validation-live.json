@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-17T01:47:15.070Z",
+      "checkedAt": "2026-11-17T07:49:34.364Z",
       "rowCount": 263,
       "rawRowCount": 264,
       "pagesFetched": 1,
@@ -32,20 +32,20 @@
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
       "state": "ok",
-      "checkedAt": "2026-11-17T01:47:15.070Z",
-      "rowCount": 242,
-      "rawRowCount": 1154,
+      "checkedAt": "2026-11-17T07:49:34.364Z",
+      "rowCount": 244,
+      "rawRowCount": 1156,
       "pagesFetched": 1,
       "pagesAvailable": 1,
       "errors": [],
-      "movieCount": 46
+      "movieCount": 47
     },
     {
       "key": "sacnilk",
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-17T01:47:15.070Z",
+      "checkedAt": "2026-11-17T07:49:34.364Z",
       "rowCount": 375,
       "rawRowCount": 420,
       "pagesFetched": 21,
@@ -58,7 +58,7 @@
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-17T01:47:15.070Z",
+      "checkedAt": "2026-11-17T07:49:34.364Z",
       "rowCount": 37,
       "rawRowCount": 13,
       "pagesFetched": 1,
@@ -76,16 +76,16 @@
       "movieCount": 0
     }
   ],
-  "acceptedListingCount": 189,
+  "acceptedListingCount": 190,
   "duplicatesMerged": 56,
   "releaseDateConflictCount": 3,
-  "verifiedMovieCount": 133,
-  "checkedAt": "2026-11-17T01:47:15.070Z",
+  "verifiedMovieCount": 134,
+  "checkedAt": "2026-11-17T07:49:34.364Z",
   "stale": false,
-  "sourceRowCount": 917,
-  "candidateCount": 560,
+  "sourceRowCount": 919,
+  "candidateCount": 562,
   "platformCounts": {
-    "Prime Video": 29,
+    "Prime Video": 30,
     "JioHotstar": 16,
     "SonyLIV": 10,
     "Netflix": 39,
@@ -103,11 +103,11 @@
     "not_a_movie": 77,
     "telugu_audio_not_listed": 218,
     "tentative_or_subtitles_only": 2,
-    "original_telugu": 219,
+    "original_telugu": 220,
     "non_indian_language": 15,
     "missing_ott_date": 1,
-    "no_matching_movie_id": 66,
     "ambiguous_movie_match": 50,
+    "no_matching_movie_id": 66,
     "original_language_unconfirmed": 8,
     "non_indian_film": 46,
     "country_conflict": 3,
@@ -127,8 +127,21 @@
   ],
   "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 23.114,
+  "durationSeconds": 20.017,
   "examples": [
+    {
+      "id": "tt33381528",
+      "name": "Premada Oorali",
+      "year": "2026",
+      "ottReleaseDate": "2026-11-17",
+      "platforms": [
+        "Prime Video"
+      ],
+      "originalLanguage": [
+        "Kannada"
+      ],
+      "originalLanguageEvidence": "TMDB public original-language field"
+    },
     {
       "id": "tt40856286",
       "name": "VIBE",
@@ -269,19 +282,6 @@
       ],
       "originalLanguage": [
         "Malayalam"
-      ],
-      "originalLanguageEvidence": "TMDB public original-language field"
-    },
-    {
-      "id": "tt33095205",
-      "name": "Enna Vilai",
-      "year": "2026",
-      "ottReleaseDate": "2026-10-15",
-      "platforms": [
-        "Netflix"
-      ],
-      "originalLanguage": [
-        "Tamil"
       ],
       "originalLanguageEvidence": "TMDB public original-language field"
     }
