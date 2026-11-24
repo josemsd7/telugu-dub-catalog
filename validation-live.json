@@ -5,7 +5,7 @@
   "sourceUrl": "https://ottreleasemovies.com/",
   "sortOrder": "source_ott_release_date_desc",
   "datePolicy": "earliest_reported_telugu_ott_date",
-  "coverageWindowStart": "2025-11-24",
+  "coverageWindowStart": "2025-11-25",
   "coverageHistoryDays": 365,
   "sourceUrls": [
     "https://ottreleasemovies.com/",
@@ -19,7 +19,7 @@
       "name": "OTTReleaseMovies",
       "url": "https://ottreleasemovies.com/",
       "state": "ok",
-      "checkedAt": "2026-11-24T10:14:48.219Z",
+      "checkedAt": "2026-11-24T22:40:34.930Z",
       "rowCount": 272,
       "rawRowCount": 273,
       "pagesFetched": 1,
@@ -31,10 +31,13 @@
       "key": "trendraja",
       "name": "Trendraja",
       "url": "https://trendraja.in/telugu-movie-ott-release-dates-2021/",
-      "state": "cached",
-      "checkedAt": "2026-11-24T00:11:17.629Z",
+      "state": "ok",
+      "checkedAt": "2026-11-24T22:40:34.930Z",
       "rowCount": 247,
-      "error": "fetch failed",
+      "rawRowCount": 1162,
+      "pagesFetched": 1,
+      "pagesAvailable": 1,
+      "errors": [],
       "movieCount": 45
     },
     {
@@ -42,7 +45,7 @@
       "name": "Sacnilk",
       "url": "https://www.sacnilk.com/ott-movie-releases",
       "state": "ok",
-      "checkedAt": "2026-11-24T10:14:48.219Z",
+      "checkedAt": "2026-11-24T22:40:34.930Z",
       "rowCount": 367,
       "rawRowCount": 420,
       "pagesFetched": 21,
@@ -55,7 +58,7 @@
       "name": "123telugu",
       "url": "https://www.123telugu.com/mnews/latest-telugu-movie-theatrical-and-ott-release-dates-list.html",
       "state": "ok",
-      "checkedAt": "2026-11-24T10:14:48.219Z",
+      "checkedAt": "2026-11-24T22:40:34.930Z",
       "rowCount": 55,
       "rawRowCount": 20,
       "pagesFetched": 1,
@@ -77,7 +80,7 @@
   "duplicatesMerged": 54,
   "releaseDateConflictCount": 3,
   "verifiedMovieCount": 133,
-  "checkedAt": "2026-11-24T10:14:48.219Z",
+  "checkedAt": "2026-11-24T22:40:34.930Z",
   "stale": false,
   "sourceRowCount": 941,
   "candidateCount": 575,
@@ -122,12 +125,9 @@
     "A failed source uses its last successful recent snapshot while other sources update. If all release sources fail, publication stops and the previous deployment is preserved.",
     "SV Telugu OTT returned HTTP 403 to automated requests during validation and is not an active source. Combined coverage is not a guarantee of every platform or every Telugu dub."
   ],
-  "refreshWarnings": [
-    "tt45268030: Metadata HTTP 504",
-    "tt5598578: Metadata HTTP 504"
-  ],
+  "refreshWarnings": [],
   "lastError": null,
-  "durationSeconds": 56.821,
+  "durationSeconds": 42.275,
   "examples": [
     {
       "id": "tt39239818",
